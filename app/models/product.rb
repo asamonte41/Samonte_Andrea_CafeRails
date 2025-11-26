@@ -7,7 +7,7 @@ class Product < ApplicationRecord
   # Validations (Req 4.2.1 ✯)
   validates :name, presence: true, length: { minimum: 3, maximum: 255 }
   validates :description, presence: true, length: { minimum: 10 }
-  validates :price, presence: true, numericality: { greater_than: 0 }
+  validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :stock, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :category, presence: true
 
