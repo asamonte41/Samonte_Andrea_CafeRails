@@ -40,6 +40,23 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# Authentication & Admin Dashboard (For 1.1 and 1.2)
+gem 'devise'
+gem 'activeadmin'
+
+# Image Upload (For 1.3, 5.2)
+gem 'image_processing', '~> 1.2'
+
+# Pagination (Required for 2.5)
+gem 'kaminari'
+
+# Search (2.6)
+gem 'ransack'
+
+# CSS Framework (opt but might help me? lol)
+gem 'sassc-rails'
+
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
