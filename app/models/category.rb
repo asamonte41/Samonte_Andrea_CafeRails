@@ -12,6 +12,6 @@ class Category < ApplicationRecord
 
   # No associations needed for Ransack here
   def self.ransackable_associations(auth_object = nil)
-    []
+    [ "products" ]
   end
 end

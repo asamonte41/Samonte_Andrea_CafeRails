@@ -2,6 +2,9 @@ ActiveAdmin.register Category do
   # Allow these parameters to be updated
   permit_params :name, :description
 
+  config.filters = false   # disables ALL filters for Category
+
+
   # Customize the index page
   index do
     selectable_column

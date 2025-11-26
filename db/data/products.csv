@@ -1,0 +1,16 @@
+name,description,price,stock,category_name,image_filename
+Macarons Assorted,"Colorful French macarons in a variety of flavors",15.00,30,Baked Goods,macarons.jpg
+Chocolate Chip Cookies,"Classic homemade chocolate chip cookies",8.50,50,Baked Goods,cookies.jpg
+Brownies,"Rich, fudgy chocolate brownies",12.00,40,Baked Goods,brownies.jpg
+Cupcakes Vanilla,"Moist vanilla cupcakes with buttercream frosting",10.00,35,Baked Goods,cupcakes.jpg
+Fruit Tarts,"Fresh fruit tarts with custard filling",18.00,20,Baked Goods,fruit_tarts.jpg
+Espresso Blend Coffee,"Strong espresso blend coffee beans",20.00,25,Beverages,espresso_blend.jpg
+Bubble Tea Kit,"DIY bubble tea kit with tapioca pearls",25.00,15,Beverages,bubble_tea_kit.jpg
+Hot Chocolate,"Rich and creamy hot chocolate mix",12.00,30,Beverages,hot_chocolate.jpg
+DIY Macaron Kit,"Everything you need to make your own macarons",30.00,10,Dessert Kits,diy_macaron_kit.jpg
+Cake Decorating Kit,"Includes tools and icing for decorating cakes",28.00,12,Dessert Kits,cake_decorating_kit.jpg
+Boba Tea Starter Pack,"Starter kit for making boba teas at home",35.00,8,Dessert Kits,boba_tea_starter_pack.jpg
+Gift Box Assorted Treats,"Assorted sweets packaged for gifting",45.00,10,Gift Boxes,gift_box.jpg
+Holiday Cookies Pack,"Seasonal holiday-themed cookies",20.00,15,Seasonal Specials,holiday_cookies.jpg
+Limited Edition Latte,"Pumpkin spice latte (fall special)",6.50,50,Seasonal Specials,limited_edition_latte.jpg
+Valentine Macaron Box,"Heart-shaped macarons for Valentine’s Day",25.00,20,Seasonal Specials,valentine_macaron_box.jpg
