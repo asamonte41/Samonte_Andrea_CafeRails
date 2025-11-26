@@ -42,7 +42,7 @@ gem "image_processing", "~> 1.2"
 
 # Authentication & Admin Dashboard (For 1.1 and 1.2)
 gem 'devise'
-gem 'activeadmin'
+gem 'activeadmin', '~> 3.4'
 
 # Image Upload (For 1.3, 5.2)
 gem 'image_processing', '~> 1.2'

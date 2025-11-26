@@ -15,6 +15,11 @@
 default: &default
   adapter: postgresql
   encoding: unicode
+  username: cafe_admin
+  password: password123
+  host: localhost
+  port: 5432
+  pool: 5
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -88,8 +93,8 @@ production:
   primary: &primary_production
     <<: *default
     database: cafe_rails_production
-    username: cafe_rails
-    password: <%= ENV["CAFE_RAILS_DATABASE_PASSWORD"] %>
+    username: cafe_admin
+    password: password123
   cache:
     <<: *primary_production
     database: cafe_rails_production_cache
