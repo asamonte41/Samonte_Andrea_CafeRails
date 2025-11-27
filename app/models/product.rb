@@ -11,12 +11,39 @@ class Product < ApplicationRecord
   validates :stock, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :category, presence: true
 
-  # Scopes for filtering (Req 2.4)
-  scope :on_sale, -> { where(on_sale: true) }
-  scope :new_arrivals, -> { where(new_arrival: true) }
-  scope :recently_updated, -> { where("updated_at >= ?", 7.days.ago) }
+  # ---------------------------------------------------------
+  # Public Storefront Scopes (Req 2.4)
+  # ---------------------------------------------------------
 
-  # Ransack search (Req 2.6 ✯)
+  # On sale filter
+  scope :on_sale, -> { where(on_sale: true) }
+
+  # New products (created within last N days) — default 3
+  scope :new_within, ->(days = 3) {
+    where("created_at >= ?", days.to_i.days.ago)
+  }
+
+  # Recently updated, excluding new products
+  scope :recently_updated_within, ->(days = 3) {
+    where("updated_at >= ?", days.to_i.days.ago)
+      .where.not("created_at >= ?", days.to_i.days.ago)
+  }
+
+  # Filter by category
+  scope :by_category, ->(category_id) {
+    where(category_id: category_id) if category_id.present?
+  }
+
+  # Keyword search for public site (NOT used by ActiveAdmin)
+  scope :keyword_search, ->(q) {
+    where("LOWER(name) LIKE :q OR LOWER(description) LIKE :q",
+      q: "%#{q.to_s.downcase}%") if q.present?
+  }
+
+  # ---------------------------------------------------------
+  # ActiveAdmin RANSACK (no changes!)
+  # ---------------------------------------------------------
+  # These must remain for ActiveAdmin to search properly
   def self.ransackable_attributes(auth_object = nil)
     [ "name", "description", "price", "on_sale", "new_arrival" ]
   end

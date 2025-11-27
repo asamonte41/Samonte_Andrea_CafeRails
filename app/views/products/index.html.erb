@@ -6,9 +6,11 @@
   <div class="mb-4">
     <h5>Browse by Category:</h5>
     <div class="btn-group" role="group">
-      <%= link_to "All Products", products_path, class: "btn btn-outline-primary #{'active' unless params[:category_id]}" %>
+      <%= link_to "All Products", products_path, class: "btn btn-outline-primary #{'active' unless @selected_category}" %>
+
       <% @categories.each do |category| %>
-        <%= link_to category.name, products_path(category_id: category.id),
+        <%= link_to category.name,
+            products_path(category_id: category.id),
             class: "btn btn-outline-primary #{@selected_category == category ? 'active' : ''}" %>
       <% end %>
     </div>
@@ -18,11 +20,16 @@
   <div class="mb-4">
     <h5>Filter Products:</h5>
     <div class="btn-group" role="group">
-      <%= link_to "On Sale", products_path(on_sale: true, category_id: params[:category_id]),
+      <%= link_to "On Sale",
+          products_path(on_sale: true, category_id: params[:category_id]),
           class: "btn btn-outline-success #{'active' if params[:on_sale]}" %>
-      <%= link_to "New Arrivals", products_path(new_arrival: true, category_id: params[:category_id]),
+
+      <%= link_to "New Arrivals",
+          products_path(new_arrival: true, category_id: params[:category_id]),
           class: "btn btn-outline-info #{'active' if params[:new_arrival]}" %>
-      <%= link_to "Recently Updated", products_path(recently_updated: true, category_id: params[:category_id]),
+
+      <%= link_to "Recently Updated",
+          products_path(recently_updated: true, category_id: params[:category_id]),
           class: "btn btn-outline-warning #{'active' if params[:recently_updated]}" %>
     </div>
   </div>
@@ -31,20 +38,23 @@
   <div class="card mb-4">
     <div class="card-body">
       <h5 class="card-title">Search Products</h5>
-      <%= search_form_for @products.ransack(params[:q]), url: products_path, method: :get do |f| %>
+
+      <%= search_form_for @q, url: products_path, method: :get do |f| %>
         <div class="row g-3">
           <div class="col-md-4">
             <%= f.label :category_id_eq, "Category" %>
             <%= f.select :category_id_eq,
-                options_for_select([["All Categories", ""]] + @categories.map { |c| [c.name, c.id] }, params.dig(:q, :category_id_eq)),
+                options_for_select([["All Categories", ""]] + @categories.map { |c| [c.name, c.id] }, @q.category_id_eq),
                 {}, { class: "form-select" } %>
           </div>
+
           <div class="col-md-6">
             <%= f.label :name_or_description_cont, "Keyword" %>
             <%= f.text_field :name_or_description_cont,
                 placeholder: "Search by name or description...",
                 class: "form-control" %>
           </div>
+
           <div class="col-md-2 d-flex align-items-end">
             <%= f.submit "Search", class: "btn btn-primary w-100" %>
           </div>
@@ -82,9 +92,11 @@
               <div class="mt-auto">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                   <span class="h4 mb-0 text-primary">$<%= number_with_precision(product.price, precision: 2) %></span>
+
                   <% if product.on_sale %>
                     <span class="badge bg-success">On Sale</span>
                   <% end %>
+
                   <% if product.new_arrival %>
                     <span class="badge bg-info">New</span>
                   <% end %>
@@ -96,6 +108,7 @@
 
                 <%= link_to "View Details", product_path(product), class: "btn btn-primary w-100" %>
               </div>
+
             </div>
           </div>
         </div>
@@ -106,6 +119,7 @@
     <div class="d-flex justify-content-center mt-4">
       <%= paginate @products %>
     </div>
+
   <% else %>
     <div class="alert alert-info">
       <h4>No products found</h4>
