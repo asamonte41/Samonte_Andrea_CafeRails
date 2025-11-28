@@ -1,65 +1,42 @@
 class ProductsController < ApplicationController
-  # Public storefront — no admin changes
+  # CUSTOMER SIDE ONLY — ActiveAdmin untouched.
 
   def index
-    @categories = Category.all
+    @categories = Category.order(:name)
 
-    # Base relation
-    @products = Product.all
+    # Ransack search object (fixes your error)
+    @q = Product.ransack(params[:q])
+
+    # Start with search results
+    @products = @q.result.includes(:category)
 
     # Category filter (Req 2.2)
     if params[:category_id].present?
       @products = @products.where(category_id: params[:category_id])
+      @selected_category = Category.find(params[:category_id])
     end
 
-    # Search filter (Req 2.6)
-    if params[:q].present?
-      keyword = "%#{params[:q]}%"
-      @products = @products.where(
-        "name ILIKE ? OR description ILIKE ?", keyword, keyword
-      )
+    # On Sale filter (Req 2.4)
+    if params[:on_sale] == "true"
+      @products = @products.where(on_sale: true)
+    end
+
+    # New Arrivals filter (Req 2.4)
+    if params[:new_arrival] == "true"
+      @products = @products.where(new_arrival: true)
+    end
+
+    # Recently Updated filter (Req 2.4)
+    if params[:recently_updated] == "true"
+      @products = @products.where("updated_at >= ?", 7.days.ago)
     end
 
     # Pagination (Req 2.5)
     @products = @products.page(params[:page]).per(9)
   end
 
-  # Individual product page (Req 2.3)
+  # Product details page (Req 2.3)
   def show
     @product = Product.find(params[:id])
-  end
-
-  # Filter pages -------------------------
-
-  # /products/on_sale
-  def on_sale
-    @categories = Category.all
-    @products = Product.on_sale.page(params[:page]).per(9)
-    render :index
-  end
-
-  # /products/new_arrivals
-  def new_arrivals
-    @categories = Category.all
-    @products = Product.new_arrivals.page(params[:page]).per(9)
-    render :index
-  end
-
-  # /products/recently_updated
-  def recently_updated
-    @categories = Category.all
-    @products = Product.recently_updated.page(params[:page]).per(9)
-    render :index
-  end
-
-  # /products/search
-  def search
-    @categories = Category.all
-    keyword = "%#{params[:q]}%"
-    @products = Product.where("name ILIKE ? OR description ILIKE ?", keyword, keyword)
-                       .page(params[:page])
-                       .per(9)
-
-    render :index
   end
 end
