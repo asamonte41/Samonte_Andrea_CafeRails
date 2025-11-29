@@ -23,9 +23,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_114120) do
     t.bigint "resource_id"
     t.string "resource_type"
     t.datetime "updated_at", null: false
-    t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author"
-    t.index ["namespace"], name: "index_active_admin_comments_on_namespace"
-    t.index ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource"
+    t.index [ "author_type", "author_id" ], name: "index_active_admin_comments_on_author"
+    t.index [ "namespace" ], name: "index_active_admin_comments_on_namespace"
+    t.index [ "resource_type", "resource_id" ], name: "index_active_admin_comments_on_resource"
   end
 
   create_table "active_storage_attachments", force: :cascade do |t|
@@ -34,8 +34,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_114120) do
     t.string "name", null: false
     t.bigint "record_id", null: false
     t.string "record_type", null: false
-    t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
-    t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
+    t.index [ "blob_id" ], name: "index_active_storage_attachments_on_blob_id"
+    t.index [ "record_type", "record_id", "name", "blob_id" ], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
@@ -94,6 +94,17 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_26_114120) do
     t.integer "stock"
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_products_on_category_id"
+  end
+
+  create_table "provinces", force: :cascade do |t|
+    t.string "abbreviation", null: false
+    t.datetime "created_at", null: false
+    t.integer "gst_cents", default: 0, null: false
+    t.integer "hst_cents", default: 0, null: false
+    t.string "name", null: false
+    t.integer "pst_cents", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.index ["abbreviation"], name: "index_provinces_on_abbreviation", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
