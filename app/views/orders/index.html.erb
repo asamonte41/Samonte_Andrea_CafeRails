@@ -1,9 +1,27 @@
-<h1>Your Orders</h1>
+<h1>My Orders</h1>
 
-<% @orders.each do |order| %>
-  <div>
-    <h3>Order <%= link_to order.id, order_path(order) %> - <%= order.status %></h3>
-    <p>Total: $<%= '%.2f' % (order.total_cents.to_f / 100) %></p>
-    <p>Placed: <%= order.created_at.to_s(:short) %></p>
-  </div>
+<% if @orders.any? %>
+  <% @orders.each do |order| %>
+    <div class="order-card">
+      <h3>
+        Order <%= link_to order.id, order_path(order) %> -
+        <%= order.status.humanize %>
+      </h3>
+      <p><strong>Placed:</strong> <%= order.created_at.to_s(:short) %></p>
+      <p><strong>Total:</strong> $<%= '%.2f' % (order.total_cents.to_f / 100) %></p>
+
+      <h4>Products:</h4>
+      <ul>
+        <% order.order_items.each do |item| %>
+          <li>
+            <%= item.product.name %> x <%= item.quantity %>
+            ($<%= '%.2f' % (item.price_cents.to_f / 100) %> each)
+          </li>
+        <% end %>
+      </ul>
+    </div>
+    <hr>
+  <% end %>
+<% else %>
+  <p>You have no past orders.</p>
 <% end %>

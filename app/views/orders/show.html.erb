@@ -1,12 +1,11 @@
 <h1>Order <%= @order.id %></h1>
+<p><strong>Status:</strong> <%= @order.status.humanize %></p>
+<p><strong>Placed:</strong> <%= @order.created_at.to_s(:long) %></p>
 
-<p><strong>Status:</strong> <%= @order.status %></p>
-
-<h2>Customer Information</h2>
-<p><strong>Name:</strong> <%= @order.customer.name %></p>
-<p><strong>Email:</strong> <%= @order.customer.email %></p>
-<p><strong>Province:</strong> <%= @order.customer.province %></p>
-<p><strong>Address:</strong> <%= @order.customer.address %></p>
+<h2>Shipping Information</h2>
+<p><strong>Name:</strong> <%= @order.full_name %></p>
+<p><strong>Email:</strong> <%= @order.user&.email || "Guest" %></p>
+<p><strong>Address:</strong> <%= @order.address %>, <%= @order.city %>, <%= @order.province&.name %>, <%= @order.postal %></p>
 
 <h2>Order Items</h2>
 <table>
@@ -20,13 +19,13 @@
   </thead>
   <tbody>
     <% subtotal = 0 %>
-    <% @order.order_items.each do |oi| %>
-      <% line_total = oi.price_cents * oi.quantity %>
+    <% @order.order_items.each do |item| %>
+      <% line_total = item.price_cents * item.quantity %>
       <% subtotal += line_total %>
       <tr>
-        <td><%= oi.product.name %></td>
-        <td><%= oi.quantity %></td>
-        <td>$<%= '%.2f' % (oi.price_cents.to_f / 100) %></td>
+        <td><%= item.product.name %></td>
+        <td><%= item.quantity %></td>
+        <td>$<%= '%.2f' % (item.price_cents.to_f / 100) %></td>
         <td>$<%= '%.2f' % (line_total.to_f / 100) %></td>
       </tr>
     <% end %>
@@ -35,5 +34,7 @@
 
 <h3>Summary</h3>
 <p><strong>Subtotal:</strong> $<%= '%.2f' % (subtotal.to_f / 100) %></p>
-<p><strong>Tax:</strong> $<%= '%.2f' % (@order.tax_cents.to_f / 100) %></p>
+<p><strong>GST:</strong> $<%= '%.2f' % (@order.gst_cents.to_f / 100) %></p>
+<p><strong>PST:</strong> $<%= '%.2f' % (@order.pst_cents.to_f / 100) %></p>
+<p><strong>HST:</strong> $<%= '%.2f' % (@order.hst_cents.to_f / 100) %></p>
 <p><strong>Total:</strong> $<%= '%.2f' % (@order.total_cents.to_f / 100) %></p>

@@ -35,6 +35,12 @@
               <li class="nav-item">
                 <span class="navbar-text me-2">Hello, <%= current_user.email %></span>
               </li>
+
+              <!-- DASHBOARD LINK ADDED -->
+              <li class="nav-item">
+                <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
+              </li>
+
               <li class="nav-item">
                 <%= link_to "Edit Profile", edit_user_registration_path, class: "nav-link" %>
               </li>

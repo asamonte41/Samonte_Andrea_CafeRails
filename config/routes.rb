@@ -1,13 +1,14 @@
 Rails.application.routes.draw do
-  # Devise for users with custom registrations controller
+  # --- Devise for Users ---
+  # Uses a custom registrations controller
   devise_for :users, controllers: { registrations: "users/registrations" }
 
   # --- Pages ---
   get "/pages/:slug", to: "pages#show", as: "page"
 
   # --- Cart ---
-  get "cart", to: "cart#index", as: :cart_index
-  get "cart", to: "cart#index", as: :cart   # ✅ Allows cart_path
+  get "cart", to: "cart#index", as: :cart
+  get "cart", to: "cart#index", as: :cart_index   # Optional alias
 
   post "cart/add/:id", to: "cart#add", as: :add_cart
   patch "cart/update/:id", to: "cart#update", as: :update_cart
@@ -21,6 +22,9 @@ Rails.application.routes.draw do
   # Optional legacy checkout
   get "cart/checkout", to: "cart#checkout", as: :checkout_cart
   post "cart/place_order", to: "cart#place_order", as: :place_order_cart
+
+  # --- Customer Dashboard ---
+  get "dashboard", to: "dashboard#index", as: :dashboard
 
   # --- Orders ---
   resources :orders, only: [ :index, :show ]
@@ -40,10 +44,12 @@ Rails.application.routes.draw do
     end
   end
 
-  # --- Admin ---
+  # --- Admin (ActiveAdmin) ---
+  # Place AFTER Devise for :users to prevent conflicts
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
 
   # --- Root ---
-  root "products#index"
+  # Must be at the very end
+  root to: "products#index"
 end
