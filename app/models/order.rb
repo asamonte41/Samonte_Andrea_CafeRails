@@ -5,10 +5,13 @@ class Order < ApplicationRecord
   has_many :order_items, dependent: :destroy
   has_many :products, through: :order_items
 
-  enum status: { new: "new", paid: "paid", shipped: "shipped" }
+  # Fixed enum: use _prefix to avoid conflicts and store strings
+  enum :status, { new_order: "new", paid: "paid", shipped: "shipped" }, prefix: true
 
+
+  # Calculates subtotal as Money object (if using money gem)
   def subtotal
-    Money.new(subtotal_cents) # if using money gem, otherwise return cents / 100.0
+    Money.new(subtotal_cents) # otherwise, just return subtotal_cents / 100.0
   end
 
   def total_decimal
