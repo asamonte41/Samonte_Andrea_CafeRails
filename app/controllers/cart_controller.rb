@@ -2,62 +2,58 @@ require "ostruct"
 
 class CartController < ApplicationController
   before_action :load_cart
-  before_action :build_items, only: [ :index, :checkout ]
 
-  # =========================
-  # CART INDEX (VIEW CART)
-  # =========================
+  # Show cart
   def index
+    @items = @cart.map do |pid, qty|
+      product = Product.find_by(id: pid)
+      next unless product
+      OpenStruct.new(product: product, quantity: qty)
+    end.compact
   end
 
-  # =========================
-  # ADD ITEM TO CART
-  # =========================
+  # Add a product to cart
   def add
     pid = params[:id].to_s
     @cart[pid] = (@cart[pid] || 0) + 1
-
-    session[:cart] = @cart
     redirect_back fallback_location: cart_index_path, notice: "Added to cart"
   end
 
-  # =========================
-  # UPDATE ITEM QUANTITY
-  # =========================
+  # Update quantity
   def update
     pid = params[:id].to_s
     qty = params[:quantity].to_i
-
     if qty > 0
       @cart[pid] = qty
     else
       @cart.delete(pid)
     end
-
-    session[:cart] = @cart
     redirect_to cart_index_path, notice: "Cart updated"
   end
 
-  # =========================
-  # REMOVE ITEM
-  # =========================
+  # Remove product
   def remove
     @cart.delete(params[:id].to_s)
-    session[:cart] = @cart
-
     redirect_to cart_index_path, notice: "Removed from cart"
   end
 
-  # =========================
-  # CHECKOUT PAGE
-  # =========================
+  # Checkout form
   def checkout
+    if @cart.empty?
+      redirect_to cart_index_path, alert: "Cart is empty"
+      return
+    end
+
     @customer = Customer.new
+    @items = @cart.map do |pid, qty|
+      product = Product.find_by(id: pid)
+      OpenStruct.new(product: product, quantity: qty) if product
+    end.compact
+
+    @subtotal = @items.sum { |it| it.product.price * it.quantity }
   end
 
-  # =========================
-  # PLACE ORDER
-  # =========================
+  # Place order and save order_items
   def place_order
     if @cart.empty?
       redirect_to cart_index_path, alert: "Cart is empty"
@@ -65,32 +61,32 @@ class CartController < ApplicationController
     end
 
     # Create or find customer
-    @customer = Customer.find_or_create_by(email: customer_params[:email]) do |c|
-      c.name = customer_params[:name]
-      c.province = customer_params[:province]
-      c.address = customer_params[:address]
+    @customer = Customer.find_or_create_by(email: params[:customer][:email]) do |c|
+      c.name = params[:customer][:name]
+      c.province = params[:customer][:province]
+      c.address = params[:customer][:address]
     end
 
     # Build order
-    order = @customer.orders.build(status: "pending")
-    subtotal = 0
+    order = @customer.orders.build(status: :new_order)
+    subtotal_cents = 0
 
-    @cart.each do |product_id, qty|
-      product = Product.find_by(id: product_id)
+    @cart.each do |pid, qty|
+      product = Product.find_by(id: pid)
       next unless product
-
-      order.order_items.build(
-        product: product,
-        quantity: qty,
-        price: product.price
-      )
-
-      subtotal += product.price * qty
+      price_cents = (product.price * 100).to_i
+      order.order_items.build(product: product, quantity: qty, price_cents: price_cents)
+      subtotal_cents += price_cents * qty
     end
 
+    # Compute taxes
     tax_rate = calculate_tax(@customer.province)
-    order.tax = subtotal * tax_rate
-    order.total = subtotal + order.tax
+    tax_cents = (subtotal_cents * tax_rate).to_i
+    total_cents = subtotal_cents + tax_cents
+
+    # Assign totals
+    order.subtotal_cents = subtotal_cents
+    order.total_cents = total_cents
 
     if order.save
       session[:cart] = {}
@@ -103,29 +99,9 @@ class CartController < ApplicationController
 
   private
 
-  # =========================
-  # HELPERS
-  # =========================
-
   def load_cart
-    @cart = session[:cart] ||= {}
-  end
-
-  def build_items
-    @items = @cart.map do |product_id, qty|
-      product = Product.find_by(id: product_id)
-      next unless product
-
-      OpenStruct.new(
-        product: product,
-        quantity: qty,
-        line_total: product.price * qty
-      )
-    end.compact
-  end
-
-  def customer_params
-    params.require(:customer).permit(:name, :email, :province, :address)
+    session[:cart] ||= {}
+    @cart = session[:cart]
   end
 
   def calculate_tax(province)

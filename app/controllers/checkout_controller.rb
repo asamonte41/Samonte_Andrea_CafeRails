@@ -1,6 +1,6 @@
 class CheckoutController < ApplicationController
   before_action :ensure_cart_present
-  before_action :authenticate_user!, only: [ :create ]  # require login to save to user/orders; adjust if you want guest checkout
+  before_action :authenticate_user!, only: [ :create ]  # require login for saving orders; adjust for guest checkout if needed
 
   def address
     @user = current_user || User.new
@@ -11,25 +11,41 @@ class CheckoutController < ApplicationController
   def summary
     # Called after address form to show invoice with taxes
     @cart_items = load_cart_items
-    @address_params = params.require(:address).permit(:full_name, :address, :city, :postal, :province_id)
-    @province = Province.find(@address_params[:province_id])
+    @address_params = params.fetch(:address, {}).permit(:full_name, :address, :city, :postal, :province_id)
+
+    # Safely find province
+    if @address_params[:province_id].present?
+      @province = Province.find_by(id: @address_params[:province_id])
+      unless @province
+        redirect_to checkout_address_path, alert: "Please select a valid province."
+        return
+      end
+    else
+      redirect_to checkout_address_path, alert: "Province is required."
+      return
+    end
+
     compute_totals(@province)
   end
 
   def create
-    # create order and order_items, then redirect to payments/new
+    # Create order and order_items, then redirect to payments/new
     address_params = params.require(:address).permit(:full_name, :address, :city, :postal, :province_id)
-    province = Province.find(address_params[:province_id])
+    province = Province.find_by(id: address_params[:province_id])
+
+    unless province
+      redirect_to checkout_address_path, alert: "Please select a valid province."
+      return
+    end
 
     cart_items = load_cart_items
     subtotal_cents = cart_items.sum { |ci| (ci[:product].price.to_f * 100).to_i * ci[:quantity] }
 
-    # backup tax cents from province
+    # Compute taxes in cents
     gst_cents = province.gst_cents
     pst_cents = province.pst_cents
     hst_cents = province.hst_cents
 
-    # compute tax amounts based on cents rates stored as e.g. 500 = 5.00%
     gst_amount_cents = (subtotal_cents * gst_cents) / 10000
     pst_amount_cents = (subtotal_cents * pst_cents) / 10000
     hst_amount_cents = (subtotal_cents * hst_cents) / 10000
@@ -47,7 +63,7 @@ class CheckoutController < ApplicationController
       pst_cents: pst_amount_cents,
       hst_cents: hst_amount_cents,
       total_cents: total_cents,
-      status: "new"
+      status: "new_order"
     )
 
     cart_items.each do |ci|
@@ -68,7 +84,7 @@ class CheckoutController < ApplicationController
       )
     end
 
-    # clear cart
+    # Clear cart
     session[:cart] = {}
 
     redirect_to new_payment_path(order_id: order.id)
@@ -77,9 +93,7 @@ class CheckoutController < ApplicationController
   private
 
   def ensure_cart_present
-    if session[:cart].blank?
-      redirect_to products_path, alert: "Your cart is empty"
-    end
+    redirect_to products_path, alert: "Your cart is empty" if session[:cart].blank?
   end
 
   def load_cart_items
@@ -92,13 +106,14 @@ class CheckoutController < ApplicationController
 
   def compute_totals(province)
     @subtotal = load_cart_items.sum { |ci| ci[:product].price.to_f * ci[:quantity] }
+
     gst_rate = province.gst_cents.to_f / 100.0
     pst_rate = province.pst_cents.to_f / 100.0
     hst_rate = province.hst_cents.to_f / 100.0
 
-    @gst = (@subtotal * (gst_rate / 100.0))
-    @pst = (@subtotal * (pst_rate / 100.0))
-    @hst = (@subtotal * (hst_rate / 100.0))
+    @gst = (@subtotal * gst_rate / 100.0)
+    @pst = (@subtotal * pst_rate / 100.0)
+    @hst = (@subtotal * hst_rate / 100.0)
     @total = @subtotal + @gst + @pst + @hst
   end
 end

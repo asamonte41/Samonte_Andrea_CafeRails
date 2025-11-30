@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_11_30_145229) do
+ActiveRecord::Schema[8.1].define(version: 2025_11_30_201753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -99,6 +99,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_145229) do
     t.string "address"
     t.string "city"
     t.datetime "created_at", null: false
+    t.bigint "customer_id", null: false
     t.string "full_name"
     t.integer "gst_cents", default: 0, null: false
     t.integer "hst_cents", default: 0, null: false
@@ -108,9 +109,11 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_145229) do
     t.integer "pst_cents", default: 0, null: false
     t.string "status", default: "new", null: false
     t.integer "subtotal_cents", default: 0, null: false
+    t.integer "tax_cents"
     t.integer "total_cents", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id"
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["province_id"], name: "index_orders_on_province_id"
     t.index ["user_id"], name: "index_orders_on_user_id"
   end
@@ -170,6 +173,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_11_30_145229) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
+  add_foreign_key "orders", "customers"
   add_foreign_key "orders", "provinces"
   add_foreign_key "orders", "users"
   add_foreign_key "products", "categories"

@@ -1,42 +1,53 @@
 <h1>Checkout</h1>
 
-<% subtotal = @cart.sum { |pid, qty| Product.find(pid).price * qty } %>
-<p><strong>Subtotal:</strong> $<%= '%.2f' % subtotal %></p>
-
 <%= form_with url: place_order_cart_path, method: :post do %>
-  <div>
-    <%= label_tag "customer[name]", "Name" %>
-    <%= text_field_tag "customer[name]" %>
+  <h3>Customer Information</h3>
+
+  <div class="mb-3">
+    <%= label_tag "customer[name]", "Full Name" %>
+    <%= text_field_tag "customer[name]", "", class: "form-control", required: true %>
   </div>
-  <div>
+
+  <div class="mb-3">
     <%= label_tag "customer[email]", "Email" %>
-    <%= email_field_tag "customer[email]" %>
+    <%= email_field_tag "customer[email]", "", class: "form-control", required: true %>
   </div>
-  <div>
+
+  <div class="mb-3">
     <%= label_tag "customer[province]", "Province" %>
-    <%= text_field_tag "customer[province]" %>
-  </div>
-  <div>
-    <%= label_tag "customer[address]", "Address" %>
-    <%= text_area_tag "customer[address]" %>
+    <%= select_tag "customer[province]",
+          options_for_select([ "ON", "BC", "AB", "Other" ]),
+          class: "form-control", required: true %>
   </div>
 
-  <% # Calculate tax dynamically if province is pre-filled %>
-  <% if params.dig(:customer, :province).present? %>
-    <% province = params[:customer][:province] %>
-    <% tax_rate = case province
-                 when "ON" then 0.13
-                 when "BC" then 0.12
-                 when "AB" then 0.05
-                 else 0.05
-                 end %>
-  <% else %>
-    <% tax_rate = 0.05 %>
-  <% end %>
+  <div class="mb-3">
+    <%= label_tag "customer[address]", "Address (optional)" %>
+    <%= text_field_tag "customer[address]", "", class: "form-control" %>
+  </div>
 
-  <% tax = subtotal * tax_rate %>
-  <p><strong>Tax (<%= (tax_rate*100).to_i %>%):</strong> $<%= '%.2f' % tax %></p>
-  <p><strong>Total:</strong> $<%= '%.2f' % (subtotal + tax) %></p>
+  <h3>Order Summary</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Line Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @items.each do |it| %>
+        <tr>
+          <td><%= it.product.name %></td>
+          <td>$<%= '%.2f' % it.product.price %></td>
+          <td><%= it.quantity %></td>
+          <td>$<%= '%.2f' % (it.product.price * it.quantity) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
-  <%= submit_tag "Place Order", class: "btn" %>
+  <p><strong>Subtotal:</strong> $<%= '%.2f' % @subtotal %></p>
+
+  <%= submit_tag "Place Order", class: "btn btn-primary" %>
 <% end %>

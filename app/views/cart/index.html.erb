@@ -22,11 +22,11 @@
           <td><%= link_to it.product.name, product_path(it.product) %></td>
           <td>$<%= '%.2f' % it.product.price %></td>
           <td>
-          <div class="quantity-controls" data-product-id="<%= it.product.id %>">
-            <button type="button" class="decrement">−</button>
-            <input type="text" value="<%= it.quantity %>" class="quantity-input" size="2" readonly>
-            <button type="button" class="increment">+</button>
-          </div>
+            <div class="quantity-controls">
+              <button type="button" class="decrement">−</button>
+              <input type="text" class="quantity-input" value="<%= it.quantity %>" readonly size="2">
+              <button type="button" class="increment">+</button>
+            </div>
           </td>
           <td class="line-total">$<%= '%.2f' % (it.product.price * it.quantity) %></td>
           <td><%= button_to "Remove", remove_cart_path(id: it.product.id), method: :delete %></td>
@@ -39,88 +39,78 @@
   <p><strong>Subtotal:</strong> $<span id="cart-subtotal"><%= '%.2f' % subtotal %></span></p>
 
   <div>
-  <label for="province-select">Province:</label>
-  <select id="province-select">
-    <option value="">Select Province</option>
-    <option value="MB" <%= "selected" if current_user&.province == "MB" %>>MB</option>
-    <option value="BC" <%= "selected" if current_user&.province == "BC" %>>BC</option>
-    <option value="AB" <%= "selected" if current_user&.province == "AB" %>>AB</option>
-    <option value="Other" <%= "selected" if current_user&.province.nil? || !%w[MB BC AB].include?(current_user.province) %>>Other</option>
-  </select>
+    <label for="province-select">Province:</label>
+    <select id="province-select">
+      <option value="">Select Province</option>
+      <option value="ON">ON</option>
+      <option value="BC">BC</option>
+      <option value="AB">AB</option>
+      <option value="Other">Other</option>
+    </select>
   </div>
-
 
   <p><strong>Estimated Tax (<span id="tax-rate">5%</span>):</strong> $<span id="cart-tax"><%= '%.2f' % (subtotal * 0.05) %></span></p>
   <p><strong>Estimated Total:</strong> $<span id="cart-total"><%= '%.2f' % (subtotal * 1.05) %></span></p>
 
-  <%= link_to "Proceed to Checkout", checkout_cart_path, class: "btn" %>
+  <%= link_to "Proceed to Checkout", checkout_cart_path, class: "btn btn-primary" %>
 
-  <!-- ====== JavaScript for quantity buttons and dynamic tax ====== -->
   <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const taxRates = { "MB": 0.05, "BC": 0.12, "AB": 0.05, "Other": 0.05 };
+    document.addEventListener("DOMContentLoaded", () => {
+      const taxRates = { "ON": 0.13, "BC": 0.12, "AB": 0.05, "Other": 0.05 };
 
-  document.querySelectorAll(".quantity-controls").forEach(control => {
-    const input = control.querySelector(".quantity-input");
-    const row = control.closest("tr");
-    const price = parseFloat(row.querySelector("td:nth-child(2)").textContent.replace("$",""));
+      document.querySelectorAll(".quantity-controls").forEach(control => {
+        const input = control.querySelector(".quantity-input");
+        const row = control.closest("tr");
+        const price = parseFloat(row.querySelector("td:nth-child(2)").textContent.replace("$",""));
 
-    control.querySelector(".increment").addEventListener("click", () => {
-      let qty = parseInt(input.value);
-      qty += 1;
-      input.value = qty;
-      updateLine(row, price, qty);
-      updateCartTotals();
-      updateServer(row.dataset.productId, qty);
-    });
+        control.querySelector(".increment").addEventListener("click", () => {
+          let qty = parseInt(input.value) + 1;
+          input.value = qty;
+          updateLine(row, price, qty);
+          updateCartTotals();
+          updateServer(row.dataset.productId, qty);
+        });
 
-    control.querySelector(".decrement").addEventListener("click", () => {
-      let qty = parseInt(input.value);
-      if(qty > 1){
-        qty -= 1;
-        input.value = qty;
-        updateLine(row, price, qty);
-        updateCartTotals();
-        updateServer(row.dataset.productId, qty);
+        control.querySelector(".decrement").addEventListener("click", () => {
+          let qty = parseInt(input.value);
+          if(qty > 1){
+            qty -= 1;
+            input.value = qty;
+            updateLine(row, price, qty);
+            updateCartTotals();
+            updateServer(row.dataset.productId, qty);
+          }
+        });
+      });
+
+      function updateLine(row, price, qty){
+        row.querySelector(".line-total").textContent = "$" + (price * qty).toFixed(2);
+      }
+
+      function updateCartTotals(){
+        let subtotal = 0;
+        document.querySelectorAll("tbody tr").forEach(row => {
+          subtotal += parseFloat(row.querySelector(".line-total").textContent.replace("$",""));
+        });
+        document.getElementById("cart-subtotal").textContent = subtotal.toFixed(2);
+
+        const province = document.getElementById("province-select").value || "Other";
+        const taxRate = taxRates[province];
+        document.getElementById("tax-rate").textContent = (taxRate*100).toFixed(0) + "%";
+        const tax = subtotal * taxRate;
+        document.getElementById("cart-tax").textContent = tax.toFixed(2);
+        document.getElementById("cart-total").textContent = (subtotal + tax).toFixed(2);
+      }
+
+      document.getElementById("province-select").addEventListener("change", updateCartTotals);
+
+      function updateServer(productId, qty){
+        fetch(`/cart/update/${productId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content },
+          body: JSON.stringify({ quantity: qty })
+        });
       }
     });
-  });
-
-  function updateLine(row, price, qty){
-    row.querySelector(".line-total").textContent = "$" + (price * qty).toFixed(2);
-  }
-
-  function updateCartTotals(){
-    let subtotal = 0;
-    document.querySelectorAll("tbody tr").forEach(row => {
-      subtotal += parseFloat(row.querySelector(".line-total").textContent.replace("$",""));
-    });
-    document.getElementById("cart-subtotal").textContent = subtotal.toFixed(2);
-
-    const province = document.getElementById("province-select").value || "Other";
-    const taxRate = taxRates[province];
-    document.getElementById("tax-rate").textContent = (taxRate*100).toFixed(0) + "%";
-    const tax = subtotal * taxRate;
-    document.getElementById("cart-tax").textContent = tax.toFixed(2);
-    document.getElementById("cart-total").textContent = (subtotal + tax).toFixed(2);
-  }
-
-  document.getElementById("province-select").addEventListener("change", updateCartTotals);
-
-  function updateServer(productId, qty){
-    fetch(`/cart/update/${productId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: JSON.stringify({ quantity: qty })
-    });
-  }
-
-  // 🔹 Call this once on page load to recalc totals immediately
-  updateCartTotals();
-});
-</script>
-
+  </script>
 <% end %>
