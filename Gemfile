@@ -56,6 +56,13 @@ gem 'sassc-rails'
 
 gem 'faker'
 
+# env variable for LOCAL dev. This is for part 3
+gem "dotenv-rails", groups: [:development, :test]
+
+# Set up for heroku :P
+gem 'pg', group: :production
+gem 'sqlite3', group: [:development, :test]
+
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

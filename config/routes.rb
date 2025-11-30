@@ -1,4 +1,16 @@
 Rails.application.routes.draw do
+  get "payments/new"
+  get "payments/create"
+  get "payments/webhook"
+  get "orders/index"
+  get "orders/show"
+  get "checkout/address"
+  get "checkout/summary"
+  get "checkout/create"
+  get "cart/index"
+  get "cart/add"
+  get "cart/update"
+  get "cart/remove"
   devise_for :users
   # --- ADMIN (unchanged) ---
   devise_for :admin_users, ActiveAdmin::Devise.config
