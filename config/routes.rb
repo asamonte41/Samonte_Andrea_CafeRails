@@ -7,6 +7,8 @@ Rails.application.routes.draw do
 
   # --- Cart ---
   get "cart", to: "cart#index", as: :cart_index
+  get "cart", to: "cart#index", as: :cart   # ✅ Added so cart_path works
+
   post "cart/add/:id", to: "cart#add", as: :add_cart
   patch "cart/update/:id", to: "cart#update", as: :update_cart
   delete "cart/remove/:id", to: "cart#remove", as: :remove_cart
@@ -16,13 +18,16 @@ Rails.application.routes.draw do
   post "checkout/summary", to: "checkout#summary", as: :checkout_summary
   post "checkout/create", to: "checkout#create", as: :checkout_create
 
+  # Optional legacy checkout
+  get "cart/checkout", to: "cart#checkout", as: :checkout_cart
+  post "cart/place_order", to: "cart#place_order", as: :place_order_cart
+
   # --- Orders ---
   resources :orders, only: [ :index, :show ]
 
   # --- Payments ---
   get "payments/new", to: "payments#new", as: :new_payment
   post "payments/create", to: "payments#create", as: :create_payment
-  # webhook can stay GET or POST depending on your controller
   post "payments/webhook", to: "payments#webhook", as: :payments_webhook
 
   # --- Products ---

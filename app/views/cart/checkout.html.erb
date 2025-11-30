@@ -1,0 +1,42 @@
+<h1>Checkout</h1>
+
+<% subtotal = @cart.sum { |pid, qty| Product.find(pid).price * qty } %>
+<p><strong>Subtotal:</strong> $<%= '%.2f' % subtotal %></p>
+
+<%= form_with url: place_order_cart_path, method: :post do %>
+  <div>
+    <%= label_tag "customer[name]", "Name" %>
+    <%= text_field_tag "customer[name]" %>
+  </div>
+  <div>
+    <%= label_tag "customer[email]", "Email" %>
+    <%= email_field_tag "customer[email]" %>
+  </div>
+  <div>
+    <%= label_tag "customer[province]", "Province" %>
+    <%= text_field_tag "customer[province]" %>
+  </div>
+  <div>
+    <%= label_tag "customer[address]", "Address" %>
+    <%= text_area_tag "customer[address]" %>
+  </div>
+
+  <% # Calculate tax dynamically if province is pre-filled %>
+  <% if params.dig(:customer, :province).present? %>
+    <% province = params[:customer][:province] %>
+    <% tax_rate = case province
+                 when "ON" then 0.13
+                 when "BC" then 0.12
+                 when "AB" then 0.05
+                 else 0.05
+                 end %>
+  <% else %>
+    <% tax_rate = 0.05 %>
+  <% end %>
+
+  <% tax = subtotal * tax_rate %>
+  <p><strong>Tax (<%= (tax_rate*100).to_i %>%):</strong> $<%= '%.2f' % tax %></p>
+  <p><strong>Total:</strong> $<%= '%.2f' % (subtotal + tax) %></p>
+
+  <%= submit_tag "Place Order", class: "btn" %>
+<% end %>

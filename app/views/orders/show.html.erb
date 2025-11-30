@@ -1,17 +1,39 @@
 <h1>Order <%= @order.id %></h1>
-<p>Status: <%= @order.status %></p>
-<p>Total: $<%= '%.2f' % (@order.total_cents.to_f / 100) %></p>
 
+<p><strong>Status:</strong> <%= @order.status %></p>
+
+<h2>Customer Information</h2>
+<p><strong>Name:</strong> <%= @order.customer.name %></p>
+<p><strong>Email:</strong> <%= @order.customer.email %></p>
+<p><strong>Province:</strong> <%= @order.customer.province %></p>
+<p><strong>Address:</strong> <%= @order.customer.address %></p>
+
+<h2>Order Items</h2>
 <table>
-  <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Line</th></tr></thead>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th>Line Total</th>
+    </tr>
+  </thead>
   <tbody>
+    <% subtotal = 0 %>
     <% @order.order_items.each do |oi| %>
+      <% line_total = oi.price_cents * oi.quantity %>
+      <% subtotal += line_total %>
       <tr>
         <td><%= oi.product.name %></td>
         <td><%= oi.quantity %></td>
         <td>$<%= '%.2f' % (oi.price_cents.to_f / 100) %></td>
-        <td>$<%= '%.2f' % (oi.price_cents.to_f * oi.quantity / 100) %></td>
+        <td>$<%= '%.2f' % (line_total.to_f / 100) %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
+
+<h3>Summary</h3>
+<p><strong>Subtotal:</strong> $<%= '%.2f' % (subtotal.to_f / 100) %></p>
+<p><strong>Tax:</strong> $<%= '%.2f' % (@order.tax_cents.to_f / 100) %></p>
+<p><strong>Total:</strong> $<%= '%.2f' % (@order.total_cents.to_f / 100) %></p>

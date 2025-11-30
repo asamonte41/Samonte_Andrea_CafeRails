@@ -18,8 +18,12 @@
     <header>
       <nav>
         <%= link_to "About", page_path("about") %> |
-        <%= link_to "Contact", page_path("contact") %>
+        <%= link_to "Contact", page_path("contact") %> |
+        <%= link_to "Products", products_path %> |
+        <%= link_to "Cart (#{session[:cart]&.values&.sum || 0})", cart_index_path %> |
+        <%= link_to "Checkout", checkout_address_path %>
       </nav>
+
     </header>
 
     <main>
