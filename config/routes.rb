@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   # Devise for users
   devise_for :users
 
+  # --- Pages ---
+  get "/pages/:slug", to: "pages#show", as: "page"
+
   # --- Cart ---
   get "cart", to: "cart#index", as: :cart_index
   post "cart/add/:id", to: "cart#add", as: :add_cart

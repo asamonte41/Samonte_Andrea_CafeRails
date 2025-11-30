@@ -1,12 +1,13 @@
 ActiveAdmin.register Province do
-  permit_params :name, :abbreviation, :gst_cents, :pst_cents, :hst_cents
+  permit_params :name, :abbreviation
 
   index do
     column :name
     column :abbreviation
-    column :gst_cents
-    column :pst_cents
-    column :hst_cents
     actions
   end
+
+  # Optional: filters
+  filter :name
+  filter :abbreviation
 end

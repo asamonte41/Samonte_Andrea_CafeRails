@@ -13,6 +13,21 @@ placeholder_file = image_path.join('placeholder.png') # fallback if image missin
 CSV.foreach(csv_file_path, headers: true) do |row|
   next if row['name'].blank? || row['category_name'].blank?
 
+  # db/seeds.rb
+
+  # ---------------------------
+  # Pages (About / Contact)
+  # ---------------------------
+  Page.find_or_create_by!(slug: "about") do |p|
+    p.title = "About Us"
+    p.content = "Welcome to our website! Here’s some information about us."
+  end
+
+  Page.find_or_create_by!(slug: "contact") do |p|
+    p.title = "Contact Us"
+    p.content = "You can contact us via email at contact@example.com."
+  end
+
   # Create category
   category = Category.find_or_create_by!(name: row['category_name']) do |c|
     c.description = case row['category_name']

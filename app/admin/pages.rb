@@ -1,10 +1,17 @@
 ActiveAdmin.register Page do
-  permit_params :title, :content
+  permit_params :title, :content, :slug
+
+  index do
+    column :title
+    column :slug
+    actions
+  end
 
   form do |f|
     f.inputs "Page Details" do
       f.input :title
-      f.input :content, as: :text, input_html: { rows: 10 }
+      f.input :slug, hint: "Use 'about' or 'contact'. Must be unique."
+      f.input :content, as: :quill_editor # optional WYSIWYG editor if installed
     end
     f.actions
   end
