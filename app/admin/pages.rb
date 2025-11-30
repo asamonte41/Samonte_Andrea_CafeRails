@@ -11,7 +11,7 @@ ActiveAdmin.register Page do
     f.inputs "Page Details" do
       f.input :title
       f.input :slug, hint: "Use 'about' or 'contact'. Must be unique."
-      f.input :content, as: :quill_editor # optional WYSIWYG editor if installed
+      f.input :content, as: :quill_editor # optional WYSIWYG editor
     end
     f.actions
   end

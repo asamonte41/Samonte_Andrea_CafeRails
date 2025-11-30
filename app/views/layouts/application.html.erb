@@ -15,6 +15,16 @@
   </head>
 
   <body>
-    <%= yield %>
+    <header>
+      <nav>
+        <%= link_to "About", page_path("about") %> |
+        <%= link_to "Contact", page_path("contact") %>
+      </nav>
+    </header>
+
+    <main>
+      <%= yield %>
+    </main>
   </body>
 </html>
+
