@@ -1,7 +1,12 @@
 class User < ApplicationRecord
-  # Include default devise modules. Others available are:
-  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  # Devise modules
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
-  has_many :orders
+
+  belongs_to :province, optional: true
+
+  # Helper to get full address
+  def full_address
+    "#{address}, #{city}, #{province&.name}, #{postal}"
+  end
 end

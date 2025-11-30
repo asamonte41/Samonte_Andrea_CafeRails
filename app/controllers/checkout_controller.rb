@@ -6,6 +6,19 @@ class CheckoutController < ApplicationController
     @user = current_user || User.new
     @provinces = Province.order(:name)
     @cart_items = load_cart_items
+
+    # --- Auto-fill for logged-in users ---
+    if current_user
+      @customer = OpenStruct.new(
+        full_name: current_user.email,       # or current_user.name if you have it
+        address:   current_user.address,
+        city:      current_user.city,
+        postal:    current_user.postal,
+        province:  current_user.province
+      )
+    else
+      @customer = OpenStruct.new
+    end
   end
 
   def summary

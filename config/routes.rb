@@ -1,13 +1,13 @@
 Rails.application.routes.draw do
-  # Devise for users
-  devise_for :users
+  # Devise for users with custom registrations controller
+  devise_for :users, controllers: { registrations: "users/registrations" }
 
   # --- Pages ---
   get "/pages/:slug", to: "pages#show", as: "page"
 
   # --- Cart ---
   get "cart", to: "cart#index", as: :cart_index
-  get "cart", to: "cart#index", as: :cart   # ✅ Added so cart_path works
+  get "cart", to: "cart#index", as: :cart   # ✅ Allows cart_path
 
   post "cart/add/:id", to: "cart#add", as: :add_cart
   patch "cart/update/:id", to: "cart#update", as: :update_cart
