@@ -1,2 +1,30 @@
-<h1>Cart#index</h1>
-<p>Find me in app/views/cart/index.html.erb</p>
+<h1>Your Cart</h1>
+
+<% if @items.blank? %>
+  <p>Your cart is empty.</p>
+  <%= link_to "Continue shopping", products_path %>
+<% else %>
+  <table>
+    <thead>
+      <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Line</th><th></th></tr>
+    </thead>
+    <tbody>
+      <% @items.each do |it| %>
+        <tr>
+          <td><%= link_to it.product.name, product_path(it.product) %></td>
+          <td>$<%= '%.2f' % it.product.price %></td>
+          <td>
+            <%= form_with url: update_cart_path(id: it.product.id), method: :patch, local: true do %>
+              <%= number_field_tag :quantity, it.quantity, min: 1 %>
+              <%= submit_tag "Update" %>
+            <% end %>
+          </td>
+          <td>$<%= '%.2f' % (it.product.price * it.quantity) %></td>
+          <td><%= button_to "Remove", remove_cart_path(id: it.product.id), method: :delete %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= link_to "Checkout", checkout_address_path %>
+<% end %>

@@ -1,2 +1,17 @@
-<h1>Orders#show</h1>
-<p>Find me in app/views/orders/show.html.erb</p>
+<h1>Order <%= @order.id %></h1>
+<p>Status: <%= @order.status %></p>
+<p>Total: $<%= '%.2f' % (@order.total_cents.to_f / 100) %></p>
+
+<table>
+  <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Line</th></tr></thead>
+  <tbody>
+    <% @order.order_items.each do |oi| %>
+      <tr>
+        <td><%= oi.product.name %></td>
+        <td><%= oi.quantity %></td>
+        <td>$<%= '%.2f' % (oi.price_cents.to_f / 100) %></td>
+        <td>$<%= '%.2f' % (oi.price_cents.to_f * oi.quantity / 100) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

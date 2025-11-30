@@ -1,2 +1,7 @@
-<h1>Payments#new</h1>
-<p>Find me in app/views/payments/new.html.erb</p>
+<h1>Payment</h1>
+<p>Order: <%= @order.id %></p>
+<p>Total: $<%= '%.2f' % (@order.total_cents.to_f / 100) %></p>
+
+<%= form_with url: create_payment_path(order_id: @order.id), method: :post, local: true do %>
+  <%= submit_tag "Pay (test mode)" %>
+<% end %>
