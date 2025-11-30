@@ -7,7 +7,7 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <!-- Stylesheets (Sprockets) -->
+    <!-- Stylesheets -->
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
 
     <!-- Front-end JS via Importmap (Turbo + Stimulus) -->
@@ -15,20 +15,54 @@
   </head>
 
   <body>
-    <header>
-      <nav>
-        <%= link_to "About", page_path("about") %> |
-        <%= link_to "Contact", page_path("contact") %> |
-        <%= link_to "Products", products_path %> |
-        <%= link_to "Cart (#{session[:cart]&.values&.sum || 0})", cart_index_path %> |
-        <%= link_to "Checkout", checkout_address_path %>
-      </nav>
+    <header class="bg-light shadow-sm mb-4">
+      <nav class="navbar navbar-expand-lg navbar-light container">
+        <%= link_to "CafeRails", root_path, class: "navbar-brand" %>
 
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item"><%= link_to "About", page_path("about"), class: "nav-link" %></li>
+            <li class="nav-item"><%= link_to "Contact", page_path("contact"), class: "nav-link" %></li>
+            <li class="nav-item"><%= link_to "Products", products_path, class: "nav-link" %></li>
+            <li class="nav-item">
+              <%= link_to "Cart (#{session[:cart]&.values&.sum || 0})", cart_index_path, class: "nav-link" %>
+            </li>
+            <li class="nav-item"><%= link_to "Checkout", checkout_address_path, class: "nav-link" %></li>
+          </ul>
+
+          <ul class="navbar-nav ms-auto">
+            <% if user_signed_in? %>
+              <li class="nav-item">
+                <span class="navbar-text me-2">Hello, <%= current_user.email %></span>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Edit Profile", edit_user_registration_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "nav-link" %>
+              </li>
+            <% else %>
+              <li class="nav-item">
+                <%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %>
+              </li>
+              <li class="nav-item">
+                <%= link_to "Login", new_user_session_path, class: "nav-link" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </nav>
     </header>
 
-    <main>
+    <main class="container">
+      <% if notice %>
+        <div class="alert alert-success"><%= notice %></div>
+      <% end %>
+      <% if alert %>
+        <div class="alert alert-danger"><%= alert %></div>
+      <% end %>
+
       <%= yield %>
     </main>
   </body>
 </html>
-
