@@ -33,6 +33,7 @@ Rails.application.routes.draw do
   get "payments/new", to: "payments#new", as: :new_payment
   post "payments/create", to: "payments#create", as: :create_payment
   post "payments/webhook", to: "payments#webhook", as: :payments_webhook
+  post "/stripe/webhook", to: "stripe#webhook"
 
   # --- Products ---
   resources :products, only: [ :index, :show ] do

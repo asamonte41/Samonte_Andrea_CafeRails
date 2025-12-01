@@ -13,8 +13,9 @@ class PaymentsController < ApplicationController
       metadata: { order_id: order.id }
     )
 
-    # For simple test flow, mark as paid immediately (in real app, use webhooks)
-    order.update(status: "paid", payment_id: intent.id)
+    # Temporary: instantly mark the order as paid (project requirement 3.3.1 without webhooks)
+    order.update!(status: :paid, payment_id: intent.id)
+
 
     redirect_to order_path(order), notice: "Payment recorded (test mode)."
   rescue Stripe::StripeError => e
