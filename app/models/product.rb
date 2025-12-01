@@ -1,6 +1,6 @@
 class Product < ApplicationRecord
   belongs_to :category
-
+  has_many :order_items
   # Active Storage for images (Req 1.3)
   has_one_attached :image
 

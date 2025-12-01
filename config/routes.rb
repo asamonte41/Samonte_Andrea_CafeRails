@@ -44,6 +44,14 @@ Rails.application.routes.draw do
     end
   end
 
+  # --- Invoice ---
+
+  resources :orders do
+    member do
+      get :invoice
+    end
+  end
+
   # --- Admin (ActiveAdmin) ---
   # Place AFTER Devise for :users to prevent conflicts
   devise_for :admin_users, ActiveAdmin::Devise.config

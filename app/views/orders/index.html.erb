@@ -8,7 +8,6 @@
         <%= order.status.humanize %>
       </h3>
       <p><strong>Placed:</strong> <%= order.created_at.to_s(:short) %></p>
-      <p><strong>Total:</strong> $<%= '%.2f' % (order.total_cents.to_f / 100) %></p>
 
       <h4>Products:</h4>
       <ul>
@@ -19,6 +18,10 @@
           </li>
         <% end %>
       </ul>
+
+      <%# Taxes and Grand Total %>
+      <p><strong>Taxes:</strong> $<%= '%.2f' % (order.tax_cents.to_f / 100) %></p>
+      <p><strong>Grand Total:</strong> $<%= '%.2f' % (order.total_cents.to_f / 100) %></p>
     </div>
     <hr>
   <% end %>

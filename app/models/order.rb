@@ -1,7 +1,7 @@
 class Order < ApplicationRecord
   belongs_to :user, optional: true
-  belongs_to :province
-  belongs_to :customer
+  belongs_to :province, optional: true
+  belongs_to :customer, optional: true
 
   has_many :order_items, dependent: :destroy
   has_many :products, through: :order_items
@@ -38,8 +38,44 @@ class Order < ApplicationRecord
 
   # ---- Helper Methods ----
 
+  def subtotal_cents
+    order_items.sum { |oi| oi.price_cents * oi.quantity }
+  end
+
   def subtotal
     Money.new(subtotal_cents)
+  end
+
+  # GST: 5% for all provinces
+  def gst_cents
+    return 0 unless user&.province
+    (subtotal_cents * 0.05).to_i
+  end
+
+  # PST: 7% for BC, SK, MB, QC
+  def pst_cents
+    return 0 unless user&.province
+    case user.province.abbreviation
+    when "BC", "SK", "MB", "QC"
+      (subtotal_cents * 0.07).to_i
+    else
+      0
+    end
+  end
+
+  # HST: 13% for ON, NB, NL, NS, PE
+  def hst_cents
+    return 0 unless user&.province
+    case user.province.abbreviation
+    when "ON", "NB", "NL", "NS", "PE"
+      (subtotal_cents * 0.13).to_i
+    else
+      0
+    end
+  end
+
+  def total_cents
+    subtotal_cents + gst_cents + pst_cents + hst_cents
   end
 
   def total_decimal

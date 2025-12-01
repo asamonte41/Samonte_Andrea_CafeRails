@@ -16,6 +16,14 @@ ActiveAdmin.register User do
     column :address
     column("Province") { |u| u.province&.name }
     column("Orders Count") { |u| u.orders.count }
+
+    # Show each order with its products in the index page
+    column "Orders" do |user|
+      user.orders.map do |order|
+        "Order ##{order.id}: #{order.order_items.map { |i| i.product.name }.join(", ")}"
+      end.join("<br>").html_safe
+    end
+
     column :created_at
     actions
   end
@@ -36,6 +44,7 @@ ActiveAdmin.register User do
       table_for user.orders do
         column("Order ID") { |order| link_to order.id, admin_order_path(order) }
         column("Status") { |order| order.status }
+        column("Products") { |order| order.order_items.map { |i| i.product.name }.join(", ") }
         column("Total") { |order| number_to_currency(order.total_cents / 100.0) }
         column("Created At") { |order| order.created_at }
       end

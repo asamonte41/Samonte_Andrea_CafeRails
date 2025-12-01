@@ -63,12 +63,18 @@ class CartController < ApplicationController
     # Create or find customer
     @customer = Customer.find_or_create_by(email: params[:customer][:email]) do |c|
       c.name = params[:customer][:name]
-      c.province = params[:customer][:province]
+      c.province = params[:customer][:province] # string value
       c.address = params[:customer][:address]
     end
 
+    # Ensure province_id is present
+    province = Province.find_by(code: @customer.province) # assumes Province has a 'code' field
+    province ||= Province.first # fallback to first province if none found
+
     # Build order
     order = @customer.orders.build(status: :new_order)
+    order.province_id = province.id # assign NOT NULL province_id
+
     subtotal_cents = 0
 
     @cart.each do |pid, qty|
@@ -80,7 +86,7 @@ class CartController < ApplicationController
     end
 
     # Compute taxes
-    tax_rate = calculate_tax(@customer.province)
+    tax_rate = calculate_tax(province.code)
     tax_cents = (subtotal_cents * tax_rate).to_i
     total_cents = subtotal_cents + tax_cents
 
@@ -104,8 +110,8 @@ class CartController < ApplicationController
     @cart = session[:cart]
   end
 
-  def calculate_tax(province)
-    case province
+  def calculate_tax(province_code)
+    case province_code
     when "ON" then 0.13
     when "BC" then 0.12
     when "AB" then 0.05

@@ -1,0 +1,36 @@
+<h1>Invoice for Order #<%= @order.id %></h1>
+
+<p><strong>Customer:</strong> <%= @order.user&.full_name || "Guest" %></p>
+<p><strong>Email:</strong> <%= @order.user&.email || "-" %></p>
+<p><strong>Address:</strong> <%= @order.full_address %></p>
+<p><strong>Order Date:</strong> <%= @order.created_at.to_s(:long) %></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Unit Price</th>
+      <th>Line Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @order.order_items.each do |item| %>
+      <tr>
+        <td><%= item.product.name %></td>
+        <td><%= item.quantity %></td>
+        <td><%= number_to_currency(item.price_cents / 100.0) %></td>
+        <td><%= number_to_currency((item.price_cents * item.quantity) / 100.0) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h3>Summary</h3>
+<p>Subtotal: <%= number_to_currency(@order.subtotal_cents / 100.0) %></p>
+<p>GST: <%= number_to_currency(@order.gst_cents / 100.0) %></p>
+<p>PST: <%= number_to_currency(@order.pst_cents / 100.0) %></p>
+<p>HST: <%= number_to_currency(@order.hst_cents / 100.0) %></p>
+<p><strong>Total: <%= number_to_currency(@order.total_cents / 100.0) %></strong></p>
+
+<button onclick="window.print()">Print Invoice</button>
