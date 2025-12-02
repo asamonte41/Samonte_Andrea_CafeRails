@@ -1,0 +1,101 @@
+category_name,name,description,price,stock,image_filename
+Baked Goods,Chocolate Croissant,"Flaky croissant filled with rich chocolate.",4.50,25,baked_goods.png
+Baked Goods,Butter Croissant,"Classic laminated butter croissant.",4.25,30,baked_goods.png
+Baked Goods,Almond Croissant,"Croissant filled with almond cream.",4.75,20,baked_goods.png
+Baked Goods,Blueberry Muffin,"Soft muffin with fresh blueberries.",3.50,40,baked_goods.png
+Baked Goods,Chocolate Chip Muffin,"Moist muffin with chocolate chips.",3.50,35,baked_goods.png
+Baked Goods,Banana Bread Slice,"Moist banana loaf slice.",3.75,30,baked_goods.png
+Baked Goods,Lemon Loaf Slice,"Citrusy lemon loaf with glaze.",3.95,22,baked_goods.png
+Baked Goods,Macaron Box (6),"Assorted flavors of French macarons.",12.00,15,baked_goods.png
+Baked Goods,Macaron Box (12),"Premium assorted macarons.",22.00,12,baked_goods.png
+Baked Goods,Brownie Fudge Bar,"Rich chocolate brownie bar.",3.25,30,baked_goods.png
+Baked Goods,Cheesecake Slice,"Creamy vanilla cheesecake slice.",5.95,20,baked_goods.png
+Baked Goods,Chocolate Tart,"Dark chocolate ganache tart.",5.50,18,baked_goods.png
+Baked Goods,Fruit Tart,"Fresh fruit on vanilla custard.",6.25,15,baked_goods.png
+Baked Goods,Chocolate Cookie,"Soft-baked chocolate cookie.",2.50,50,baked_goods.png
+Baked Goods,White Chocolate Cookie,"Cookie with white chocolate chunks.",2.50,45,baked_goods.png
+Baked Goods,Oatmeal Raisin Cookie,"Chewy oatmeal raisin cookie.",2.50,40,baked_goods.png
+Baked Goods,Peanut Butter Cookie,"Rich peanut butter cookie.",2.50,38,baked_goods.png
+Baked Goods,Scones – Blueberry,"Buttery blueberry scone.",3.95,25,baked_goods.png
+Baked Goods,Scones – Cranberry Orange,"Orange zest + cranberry.",3.95,20,baked_goods.png
+Baked Goods,Cinnamon Roll,"Soft roll with cinnamon glaze.",4.95,18,baked_goods.png
+Baked Goods,Chocolate Donut,"Chocolate-glazed donut.",2.95,40,baked_goods.png
+Baked Goods,Vanilla Donut,"Classic vanilla glazed.",2.95,42,baked_goods.png
+Baked Goods,Old Fashioned Donut,"Classic style donut.",2.75,30,baked_goods.png
+Baked Goods,Matcha Cookie,"Matcha flavored cookie.",2.75,35,baked_goods.png
+Baked Goods,Red Velvet Cookie,"Red velvet cookie with cream cheese chips.",2.75,28,baked_goods.png
+Baked Goods,Espresso Brownie,"Brownie infused with espresso.",3.50,30,baked_goods.png
+Baked Goods,Chocolate Cupcake,"Rich chocolate cupcake.",3.95,20,baked_goods.png
+Baked Goods,Vanilla Cupcake,"Vanilla + buttercream frosting.",3.95,22,baked_goods.png
+Baked Goods,Tiramisu Cup,"Creamy tiramisu in cup.",5.95,16,baked_goods.png
+Baked Goods,Carrot Cake Slice,"Moist carrot cake slice.",4.75,25,baked_goods.png
+Beverages,Latte,"Café latte made with espresso + steamed milk.",4.50,50,beverages.png
+Beverages,Cappuccino,"Espresso with frothy milk foam.",4.25,45,beverages.png
+Beverages,Flat White,"Smooth milk + espresso.",4.50,40,beverages.png
+Beverages,Americano,"Espresso with hot water.",3.25,60,beverages.png
+Beverages,Mocha,"Chocolate + espresso drink.",4.95,35,beverages.png
+Beverages,Hot Chocolate,"Rich cocoa beverage.",4.25,40,beverages.png
+Beverages,Chai Latte,"Spiced tea latte.",4.75,35,beverages.png
+Beverages,Matcha Latte,"Ceremonial matcha + milk.",5.25,30,beverages.png
+Beverages,London Fog,"Earl Grey + steamed milk.",4.50,28,beverages.png
+Beverages,Espresso Shot,"Single espresso shot.",2.75,80,beverages.png
+Beverages,Iced Latte,"Chilled latte over ice.",4.50,55,beverages.png
+Beverages,Iced Americano,"Cold espresso + water.",3.25,50,beverages.png
+Beverages,Iced Matcha,"Chilled matcha latte.",5.25,25,beverages.png
+Beverages,Milk Tea,"Boba style milk tea.",4.75,40,beverages.png
+Beverages,Taro Milk Tea,"Taro flavored bubble tea.",5.25,30,beverages.png
+Beverages,Thai Iced Tea,"Sweet Thai milk tea.",5.00,25,beverages.png
+Beverages,Iced Mocha,"Cold mocha drink.",5.00,28,beverages.png
+Beverages,Bubble Tea Kit – Original,"DIY boba tea starter kit.",18.00,12,beverages.png
+Beverages,Bubble Tea Kit – Brown Sugar,"DIY brown sugar boba kit.",18.00,10,beverages.png
+Beverages,Strawberry Lemonade,"Fresh strawberry lemonade.",4.25,35,beverages.png
+Beverages,Peach Iced Tea,"Fruity peach black tea.",4.25,30,beverages.png
+Beverages,Lychee Iced Tea,"Lychee infused iced tea.",4.25,28,beverages.png
+Beverages,Lime Sparkling Water,"Refreshing lime fizz.",3.00,40,beverages.png
+Beverages,Orange Sparkling Water,"Citrus sparkling drink.",3.00,38,beverages.png
+Beverages,House Brew Coffee,"Fresh brewed coffee.",2.95,60,beverages.png
+Beverages,Cold Brew Coffee,"Smooth cold brew.",4.25,35,beverages.png
+Beverages,Vanilla Cold Brew,"Cold brew with vanilla cream.",4.75,32,beverages.png
+Beverages,Nitro Cold Brew,"Cold brew infused with nitrogen.",5.25,22,beverages.png
+Beverages,Caramel Macchiato,"Layered caramel espresso.",5.25,30,beverages.png
+Beverages,White Chocolate Mocha,"White chocolate espresso drink.",5.50,28,beverages.png
+Dessert Kits,DIY Macaron Kit – Classic,"Make 12 classic macarons.",25.00,10,dessert_kits.png
+Dessert Kits,DIY Macaron Kit – Chocolate,"Chocolate flavored macaron kit.",25.00,10,dessert_kits.png
+Dessert Kits,Boba Tea Starter Kit – Original,"All-in-one bubble tea kit.",22.00,12,dessert_kits.png
+Dessert Kits,Boba Tea Starter Kit – Taro,"Taro flavored bubble tea kit.",22.00,10,dessert_kits.png
+Dessert Kits,Dessert Decorating Kit,"Decorate cupcakes or cookies.",20.00,15,dessert_kits.png
+Dessert Kits,Cake Pops Kit,"Make your own cake pops.",18.00,14,dessert_kits.png
+Dessert Kits,Brownie Mix Kit,"DIY gooey brownies.",15.00,20,dessert_kits.png
+Dessert Kits,Cookie Mix Kit,"DIY cookie baking kit.",15.00,20,dessert_kits.png
+Dessert Kits,Matcha Dessert Kit,"Matcha flavored desserts kit.",28.00,12,dessert_kits.png
+Dessert Kits,Coffee Drink Kit,"DIY artisan coffee kit.",20.00,18,dessert_kits.png
+Dessert Kits,Hot Chocolate Kit,"Make gourmet hot chocolate.",18.00,20,dessert_kits.png
+Dessert Kits,Fruit Tart Kit,"DIY tart shell + fillings.",22.00,10,dessert_kits.png
+Dessert Kits,Tiramisu Kit,"Assemble-your-own tiramisu.",26.00,12,dessert_kits.png
+Dessert Kits,Lemon Bar Kit,"DIY lemon bar baking kit.",16.00,15,dessert_kits.png
+Dessert Kits,Donut Decorating Kit,"Decorate mini donuts.",18.00,16,dessert_kits.png
+Dessert Kits,Cake Decorating Kit,"All tools to decorate cake.",25.00,10,dessert_kits.png
+Dessert Kits,Scone Baking Kit,"Bake British scones.",14.00,20,dessert_kits.png
+Dessert Kits,Chocolate Truffle Kit,"DIY chocolate truffles.",22.00,12,dessert_kits.png
+Dessert Kits,Shortbread Kit,"DIY shortbread cookies.",14.00,20,dessert_kits.png
+Dessert Kits,Vanilla Cupcake Kit,"Make vanilla cupcakes.",16.00,18,dessert_kits.png
+Gift Boxes,Assorted Treat Box (Small),"Small box of baked goods.",20.00,12,gift_boxes.png
+Gift Boxes,Assorted Treat Box (Large),"Large gift box of treats.",35.00,10,gift_boxes.png
+Gift Boxes,Coffee Lovers Box,"Coffee + baked treats bundle.",30.00,14,gift_boxes.png
+Gift Boxes,Tea Lovers Box,"Tea + biscuits gift set.",28.00,16,gift_boxes.png
+Gift Boxes,Macaron Gift Box (12),"Premium macarons gift pack.",24.00,12,gift_boxes.png
+Gift Boxes,Chocolate Lovers Box,"Chocolate desserts assortment.",32.00,10,gift_boxes.png
+Gift Boxes,Birthday Celebration Box,"Birthday-themed desserts.",35.00,8,gift_boxes.png
+Gift Boxes,Holiday Gift Box,"Seasonal holiday assortment.",40.00,6,gift_boxes.png
+Gift Boxes,Boba Gift Box,"DIY boba tea gift bundle.",28.00,10,gift_boxes.png
+Gift Boxes,Matcha Gift Box,"Matcha treats + drinks.",30.00,10,gift_boxes.png
+Gift Boxes,Pastry Sampler Box,"Assorted pastries box.",28.00,12,gift_boxes.png
+Gift Boxes,Dessert Variety Box,"Mixed desserts sampler.",30.00,10,gift_boxes.png
+Gift Boxes,Cookie Gift Box,"Assorted cookies pack.",18.00,15,gift_boxes.png
+Gift Boxes,Brownie Gift Box,"Brownie selection pack.",20.00,14,gift_boxes.png
+Gift Boxes,Tea Time Box,"Tea + pastries assortment.",22.00,12,gift_boxes.png
+Gift Boxes,Brunch Box,"Brunch pastries + drinks.",35.00,8,gift_boxes.png
+Gift Boxes,Chocolate & Coffee Box,"Chocolate + coffee pairing.",32.00,10,gift_boxes.png
+Gift Boxes,Caramel Box,"Caramel infused desserts.",20.00,15,gift_boxes.png
+Gift Boxes,Deluxe Dessert Box,"Premium mixed desserts.",45.00,5,gift_boxes.png
+Gift Boxes,Ultimate Treat Box,"Large assorted treat bundle.",50.00,4,gift_boxes.png

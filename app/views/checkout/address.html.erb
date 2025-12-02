@@ -1,0 +1,38 @@
+<h1>Checkout - Address</h1>
+
+<%= form_with url: checkout_summary_path, method: :post, local: true do |f| %>
+
+  <div class="mb-3">
+    <%= label_tag "address[full_name]", "Full Name", class: "form-label" %>
+    <%= text_field_tag "address[full_name]", current_user&.full_name, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= label_tag "address[address]", "Address", class: "form-label" %>
+    <%= text_field_tag "address[address]", current_user&.address, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= label_tag "address[city]", "City", class: "form-label" %>
+    <%= text_field_tag "address[city]", current_user&.city, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= label_tag "address[postal]", "Postal Code", class: "form-label" %>
+    <%= text_field_tag "address[postal]", current_user&.postal, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= label_tag "address[province_id]", "Province", class: "form-label" %>
+    <%= select_tag "address[province_id]",
+        options_from_collection_for_select(@provinces, :id, :name, current_user&.province_id),
+        include_blank: "Select Province",
+        class: "form-select",
+        required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= submit_tag "Continue to Summary", class: "btn btn-primary" %>
+  </div>
+
+<% end %>

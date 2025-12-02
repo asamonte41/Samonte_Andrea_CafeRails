@@ -1,0 +1,21 @@
+<h1>Checkout</h1>
+
+<%= form_with model: @customer, url: orders_path do |f| %>
+  <div>
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+  </div>
+  <div>
+    <%= f.label :email %>
+    <%= f.email_field :email %>
+  </div>
+  <div>
+    <%= f.label :province %>
+    <%= f.text_field :province %>
+  </div>
+  <div>
+    <%= f.label :address %>
+    <%= f.text_area :address %>
+  </div>
+  <%= submit_tag "Place Order" %>
+<% end %>

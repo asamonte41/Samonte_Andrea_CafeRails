@@ -1,2 +1,152 @@
-<h1>Products#show</h1>
-<p>Find me in app/views/products/show.html.erb</p>
+<div class="container mt-4">
+
+  <!-- Breadcrumbs -->
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><%= link_to "Home", root_path %></li>
+      <li class="breadcrumb-item">
+        <%= link_to @product.category.name, products_path(category_id: @product.category.id) %>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page"><%= @product.name %></li>
+    </ol>
+  </nav>
+
+  <div class="row">
+
+    <!-- Product Image -->
+    <div class="col-md-6">
+      <% if @product.image.attached? %>
+        <%= image_tag @product.image,
+            class: "img-fluid rounded shadow-sm",
+            alt: @product.name %>
+      <% else %>
+        <div class="bg-light rounded border d-flex align-items-center justify-content-center"
+             style="height: 400px;">
+          <span class="text-muted fs-4">No image available</span>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Product Details -->
+    <div class="col-md-6">
+      <h1 class="fw-bold"><%= @product.name %></h1>
+
+      <!-- Badges -->
+      <div class="mb-3">
+        <% if @product.on_sale %>
+          <span class="badge bg-success me-1">On Sale</span>
+        <% end %>
+        <% if @product.new_arrival %>
+          <span class="badge bg-info text-dark">New Arrival</span>
+        <% end %>
+      </div>
+
+      <!-- Price -->
+      <h2 class="text-primary fw-bold mb-3">
+        $<%= number_with_precision(@product.price, precision: 2) %>
+      </h2>
+
+      <!-- Description -->
+      <div class="mb-4">
+        <h5 class="fw-semibold">Description</h5>
+        <p><%= simple_format(@product.description) %></p>
+      </div>
+
+      <!-- Category Link -->
+      <div class="mb-4">
+        <h6 class="fw-semibold">Category:</h6>
+        <%= link_to @product.category.name,
+                    products_path(category_id: @product.category.id),
+                    class: "btn btn-outline-secondary btn-sm" %>
+      </div>
+
+      <!-- Stock -->
+      <div class="mb-4">
+        <% if @product.stock.to_i > 0 %>
+          <span class="badge bg-success">
+            In Stock (<%= @product.stock %>)
+          </span>
+        <% else %>
+          <span class="badge bg-danger">Out of Stock</span>
+        <% end %>
+      </div>
+
+      <!-- Add to Cart -->
+      <% if @product.stock.to_i > 0 %>
+        <%= form_with url: add_cart_path(@product.id), method: :post, local: true do %>
+
+          <!-- Quantity Dropdown -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Quantity</label>
+            <%= select_tag :quantity,
+                  options_for_select((1..@product.stock).map { |q| [q, q] }, 1),
+                  class: "form-select",
+                  style: "width: 120px;" %>
+          </div>
+
+          <!-- Submit -->
+          <div class="d-grid">
+            <%= submit_tag "Add to Cart", class: "btn btn-primary btn-lg" %>
+          </div>
+
+        <% end %>
+      <% else %>
+        <div class="alert alert-danger">
+          This product is out of stock.
+        </div>
+      <% end %>
+
+      <!-- Back button -->
+      <div class="mt-3">
+        <%= link_to "← Back to Products",
+                    products_path,
+                    class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Related Products -->
+  <div class="mt-5">
+    <h3 class="fw-bold">More from <%= @product.category.name %></h3>
+    <hr>
+
+    <div class="row">
+      <% @product.category.products.where.not(id: @product.id).limit(4).each do |related| %>
+        <div class="col-md-3 mb-4">
+          <div class="card h-100 shadow-sm">
+
+            <!-- Related Product Image -->
+            <% if related.image.attached? %>
+              <%= link_to product_path(related) do %>
+                <%= image_tag related.image,
+                    class: "card-img-top",
+                    style: "height: 150px; object-fit: cover;" %>
+              <% end %>
+            <% else %>
+              <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
+                   style="height: 150px;">
+                <span class="text-muted small">No image</span>
+              </div>
+            <% end %>
+
+            <div class="card-body">
+              <h6 class="card-title">
+                <%= truncate(related.name, length: 40) %>
+              </h6>
+              <p class="text-primary fw-bold">
+                $<%= number_with_precision(related.price, precision: 2) %>
+              </p>
+              <%= link_to "View",
+                          product_path(related),
+                          class: "btn btn-sm btn-outline-primary" %>
+            </div>
+
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+  </div>
+
+</div>

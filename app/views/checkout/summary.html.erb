@@ -1,0 +1,16 @@
+<h1>Order Summary</h1>
+<p>Subtotal: $<%= "%.2f" % @subtotal %></p>
+<p>GST: $<%= "%.2f" % @gst %></p>
+<p>PST: $<%= "%.2f" % @pst %></p>
+<p>HST: $<%= "%.2f" % @hst %></p>
+<p>Total: $<%= "%.2f" % @total %></p>
+
+<%= form_with url: checkout_create_path, method: :post, local: true do %>
+  <%= hidden_field_tag "address[full_name]", @address_params[:full_name] %>
+  <%= hidden_field_tag "address[address]", @address_params[:address] %>
+  <%= hidden_field_tag "address[city]", @address_params[:city] %>
+  <%= hidden_field_tag "address[postal]", @address_params[:postal] %>
+  <%= hidden_field_tag "address[province_id]", @address_params[:province_id] %>
+
+  <%= submit_tag "Place order and pay" %>
+<% end %>

@@ -1,0 +1,38 @@
+/*
+ *= require_self
+ *= require_tree .
+ */
+
+/* Custom global styles for your Cafe Rails project */
+
+/* Body styling */
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #f8f9fa; /* light gray background for site */
+  margin: 0;
+  padding: 0;
+}
+
+/* Navbar fixes for Bootstrap */
+.navbar-brand {
+  font-weight: bold;
+}
+
+.nav-link {
+  font-size: 1rem;
+}
+
+/* Flash message spacing */
+.alert {
+  margin-top: 1rem;
+}
+
+/* Admin index tables */
+table.index_table {
+  margin-top: 1rem;
+}
+
+/* Images in ActiveAdmin index page */
+.index_table img {
+  border-radius: 4px;
+}

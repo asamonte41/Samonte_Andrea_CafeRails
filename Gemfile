@@ -37,12 +37,11 @@ gem "kamal", require: false
 # Add HTTP asset caching/compression and X-Sendfile acceleration to Puma [https://github.com/basecamp/thruster/]
 gem "thruster", require: false
 
-# Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
 
 # Authentication & Admin Dashboard (For 1.1 and 1.2)
 gem 'devise'
 gem 'activeadmin', '~> 3.4'
+gem "stripe"
 
 # Image Upload (For 1.3, 5.2)
 gem 'image_processing', '~> 1.2'
@@ -56,6 +55,17 @@ gem 'ransack'
 # CSS Framework (opt but might help me? lol)
 gem 'sassc-rails'
 gem 'bootstrap', '~> 5.3.2'
+
+gem 'faker'
+
+# env variable for LOCAL dev. This is for part 3
+gem "dotenv-rails", groups: [:development, :test]
+
+# Set up for heroku :P
+#gem 'pg', group: :production
+gem 'sqlite3', group: [:development, :test]
+
+
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

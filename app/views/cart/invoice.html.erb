@@ -1,0 +1,50 @@
+<h1>Invoice</h1>
+
+<h3>Order Details</h3>
+<p><strong>Order ID:</strong> <%= @order.id %></p>
+<p><strong>Customer:</strong> <%= @order.customer.name %> (<%= @order.customer.email %>)</p>
+<p><strong>Province:</strong> <%= @order.customer.province %></p>
+<p><strong>Address:</strong> <%= @order.customer.address.present? ? @order.customer.address : "N/A" %></p>
+
+<h3>Items</h3>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Price</th>
+      <th>Quantity</th>
+      <th>Line Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @order.order_items.each do |item| %>
+      <tr>
+        <td><%= item.product.name %></td>
+        <td>$<%= '%.2f' % item.price %></td>
+        <td><%= item.quantity %></td>
+        <td>$<%= '%.2f' % (item.price * item.quantity) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<% subtotal = @order.order_items.sum { |item| item.price * item.quantity } %>
+
+<h3>Summary</h3>
+<p><strong>Subtotal:</strong> $<%= '%.2f' % subtotal %></p>
+
+<%# Compute taxes based on province %>
+<% tax_rate = case @order.customer.province
+              when "ON" then 0.13
+              when "BC" then 0.12
+              when "AB" then 0.05
+              else 0.05
+              end %>
+
+<p><strong>Tax Rate:</strong> <%= (tax_rate * 100).to_i %>%</p>
+<p><strong>Tax Amount:</strong> $<%= '%.2f' % (subtotal * tax_rate) %></p>
+<p><strong>Total:</strong> $<%= '%.2f' % (subtotal + subtotal * tax_rate) %></p>
+
+<div class="mt-3">
+  <%= link_to "Back to Products", products_path, class: "btn btn-outline-secondary" %>
+</div>

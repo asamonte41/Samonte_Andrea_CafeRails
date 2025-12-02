@@ -1,37 +1,41 @@
 class ProductsController < ApplicationController
-  # Req 2.1 ✯ - Front page with products
-  # Req 2.2 - Navigate by category
-  # Req 2.4 - Filter by on_sale, new, recently_updated
-  # Req 2.5 - Pagination
-  # Req 2.6 ✯ - Search with keyword by category
+  # CUSTOMER SIDE ONLY — ActiveAdmin untouched.
+
   def index
-    @categories = Category.all
+    @categories = Category.order(:name)
 
-    # Start with all products
-    @products = Product.includes(:category).all
+    # Ransack search object (fixes your error)
+    @q = Product.ransack(params[:q])
 
-    # Filter by category (Req 2.2)
+    # Start with search results
+    @products = @q.result.includes(:category)
+
+    # Category filter (Req 2.2)
     if params[:category_id].present?
       @products = @products.where(category_id: params[:category_id])
       @selected_category = Category.find(params[:category_id])
     end
 
-    # Filter by sale/new/updated (Req 2.4)
-    @products = @products.on_sale if params[:on_sale].present?
-    @products = @products.new_arrivals if params[:new_arrival].present?
-    @products = @products.recently_updated if params[:recently_updated].present?
+    # On Sale filter (Req 2.4)
+    if params[:on_sale] == "true"
+      @products = @products.where(on_sale: true)
+    end
 
-    # Search functionality (Req 2.6 ✯)
-    if params[:q].present?
-      @q = @products.ransack(params[:q])
-      @products = @q.result(distinct: true)
+    # New Arrivals filter (Req 2.4)
+    if params[:new_arrival] == "true"
+      @products = @products.where(new_arrival: true)
+    end
+
+    # Recently Updated filter (Req 2.4)
+    if params[:recently_updated] == "true"
+      @products = @products.where("updated_at >= ?", 7.days.ago)
     end
 
     # Pagination (Req 2.5)
-    @products = @products.page(params[:page]).per(12)
+    @products = @products.page(params[:page]).per(9)
   end
 
-  # Req 2.3 ✯ - Individual product page
+  # Product details page (Req 2.3)
   def show
     @product = Product.find(params[:id])
   end
