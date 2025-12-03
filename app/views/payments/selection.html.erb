@@ -1,0 +1,45 @@
+<h1>Choose Payment Method</h1>
+
+<p>Order Total: $<%= '%.2f' % (@order.total_cents.to_f / 100) %></p>
+
+<div class="payment-options">
+
+  <!-- Inline Card (Stripe Elements) -->
+  <div class="card-payment mb-4">
+    <h2>Pay with Card</h2>
+    <%= button_to "Pay with Card", new_payment_path(order_id: @order.id), method: :get, class: "btn btn-primary" %>
+  </div>
+
+  <!-- Stripe Hosted Checkout -->
+  <div class="stripe-checkout">
+    <h2>Stripe Checkout</h2>
+    <button id="stripe-checkout-button" class="btn btn-success">Pay with Stripe Checkout</button>
+  </div>
+
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const stripe = Stripe("<%= Rails.application.credentials.dig(:stripe, :public_key) %>");
+    const checkoutButton = document.getElementById("stripe-checkout-button");
+
+    checkoutButton.addEventListener("click", async () => {
+      const response = await fetch("<%= payments_create_checkout_session_path %>", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ order_id: <%= @order.id %> })
+      });
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else if (data.error) {
+        alert("Error: " + data.error);
+      }
+    });
+  });
+</script>

@@ -33,6 +33,8 @@ class Order < ApplicationRecord
       total_cents
       updated_at
       user_id
+      payment_method
+      stripe_payment_id
     ]
   end
 
@@ -92,5 +94,33 @@ class Order < ApplicationRecord
 
   def hst_rate
     hst_cents.to_f / 100.0
+  end
+
+  # ---------------------------------------------------------
+  #  YOUR REQUESTED ADDITIONS (nothing removed or changed)
+  # ---------------------------------------------------------
+
+  validates :full_name, :email, :address, :city, :province, presence: true
+  validates :payment_method, presence: true
+
+  def subtotal
+    subtotal_cents.to_f / 100.0
+  end
+
+  def tax
+    tax_cents.to_f / 100.0
+  end
+
+  def total
+    total_cents.to_f / 100.0
+  end
+
+  def mark_paid!(processor:, payment_id:)
+    update!(
+      payment_status: "paid",
+      payment_processor: processor,
+      payment_id: payment_id,
+      stripe_payment_id: payment_id # store Stripe payment ID here
+    )
   end
 end

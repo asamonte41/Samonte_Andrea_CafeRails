@@ -1,0 +1,49 @@
+<h1>Review Your Order</h1>
+
+<h2>Shipping Information</h2>
+<p><strong>Full Name:</strong> <%= @order_data["full_name"] %></p>
+<p><strong>Email:</strong> <%= @order_data["email"] %></p>
+<p><strong>Address:</strong> <%= @order_data["address"] %>, <%= @order_data["city"] %>, <%= @order_data["postal"] %></p>
+<p><strong>Province:</strong> <%= @province&.name || "N/A" %></p>
+
+<hr>
+
+<h2>Order Summary</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Unit Price</th>
+      <th>Quantity</th>
+      <th>Line Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @cart_items.each do |item| %>
+      <tr>
+        <td><%= item[:product].name %></td>
+        <td>$<%= '%.2f' % item[:product].price %></td>
+        <td><%= item[:quantity] %></td>
+        <td>$<%= '%.2f' % (item[:product].price * item[:quantity]) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<p><strong>Subtotal:</strong> $<%= '%.2f' % (@subtotal_cents.to_f / 100) %></p>
+<p><strong>GST:</strong> $<%= '%.2f' % (@gst_cents.to_f / 100) %></p>
+<p><strong>PST:</strong> $<%= '%.2f' % (@pst_cents.to_f / 100) %></p>
+<p><strong>HST:</strong> $<%= '%.2f' % (@hst_cents.to_f / 100) %></p>
+<p><strong>Total:</strong> $<%= '%.2f' % (@total_cents.to_f / 100) %></p>
+
+<hr>
+
+<%= form_with url: checkout_path, method: :post, local: true do |f| %>
+  <div class="mb-3">
+    <%= label_tag :payment_method, "Payment Method" %>
+    <%= select_tag :payment_method, options_for_select([["Stripe", "stripe"], ["Cash on Delivery", "cod"]], "stripe"), class: "form-select" %>
+  </div>
+
+  <%= submit_tag "Place Order", class: "btn btn-primary" %>
+<% end %>

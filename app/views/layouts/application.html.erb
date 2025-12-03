@@ -8,24 +8,38 @@
     <%= csp_meta_tag %>
 
     <!-- Stylesheets -->
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
+
+    <%# Enable PWA manifest if needed %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
 
     <!-- Front-end JS via Importmap (Turbo + Stimulus) -->
     <%= javascript_importmap_tags %>
+
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
   </head>
 
   <body>
-    <header class="bg-light shadow-sm mb-4">
-      <nav class="navbar navbar-expand-lg navbar-light container">
-        <%= link_to "CafeRails", root_path, class: "navbar-brand" %>
 
-        <div class="collapse navbar-collapse">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm mb-4">
+      <div class="container">
+        <%= link_to "CafeRails", root_path, class: "navbar-brand" %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item"><%= link_to "About", page_path("about"), class: "nav-link" %></li>
             <li class="nav-item"><%= link_to "Contact", page_path("contact"), class: "nav-link" %></li>
             <li class="nav-item"><%= link_to "Products", products_path, class: "nav-link" %></li>
             <li class="nav-item">
-              <%= link_to "Cart (#{session[:cart]&.values&.sum || 0})", cart_index_path, class: "nav-link" %>
+              <%= link_to "Cart (#{session[:cart]&.values&.sum || 0})", cart_path, class: "nav-link" %>
             </li>
             <li class="nav-item"><%= link_to "Checkout", checkout_address_path, class: "nav-link" %></li>
           </ul>
@@ -35,40 +49,41 @@
               <li class="nav-item">
                 <span class="navbar-text me-2">Hello, <%= current_user.email %></span>
               </li>
-
-              <!-- DASHBOARD LINK ADDED -->
-              <li class="nav-item">
-                <%= link_to "Dashboard", dashboard_path, class: "nav-link" %>
-              </li>
-
-              <li class="nav-item">
-                <%= link_to "Edit Profile", edit_user_registration_path, class: "nav-link" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Logout", destroy_user_session_path, method: :delete, class: "nav-link" %>
-              </li>
+              <li class="nav-item"><%= link_to "Dashboard", dashboard_path, class: "nav-link" %></li>
+              <li class="nav-item"><%= link_to "Edit Profile", edit_user_registration_path, class: "nav-link" %></li>
+              <li class="nav-item"><%= link_to "Logout", destroy_user_session_path, method: :delete, class: "nav-link" %></li>
             <% else %>
-              <li class="nav-item">
-                <%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %>
-              </li>
-              <li class="nav-item">
-                <%= link_to "Login", new_user_session_path, class: "nav-link" %>
-              </li>
+              <li class="nav-item"><%= link_to "Sign Up", new_user_registration_path, class: "nav-link" %></li>
+              <li class="nav-item"><%= link_to "Login", new_user_session_path, class: "nav-link" %></li>
             <% end %>
           </ul>
         </div>
-      </nav>
-    </header>
+      </div>
+    </nav>
 
-    <main class="container">
-      <% if notice %>
-        <div class="alert alert-success"><%= notice %></div>
-      <% end %>
-      <% if alert %>
-        <div class="alert alert-danger"><%= alert %></div>
+    <!-- Main container -->
+    <div class="container">
+
+      <!-- Breadcrumbs -->
+      <%= render 'shared/breadcrumbs' %>
+
+      <!-- Flash messages -->
+      <% flash.each do |key, value| %>
+        <div class="alert alert-<%= key == "notice" ? "success" : "danger" %> alert-dismissible fade show" role="alert">
+          <%= value %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
       <% end %>
 
+      <!-- Main content -->
       <%= yield %>
-    </main>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-light text-center py-4 mt-5 border-top">
+      <p>&copy; <%= Time.current.year %> Cafe Rails – Cozy online café experience</p>
+    </footer>
+
   </body>
 </html>

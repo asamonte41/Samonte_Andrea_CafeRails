@@ -1,116 +1,32 @@
 <h1>Your Cart</h1>
 
-<% if @items.blank? %>
+<% if @items.empty? %>
   <p>Your cart is empty.</p>
-  <%= link_to "Continue shopping", products_path %>
+  <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
 <% else %>
-  <% subtotal = @items.sum { |it| it.product.price * it.quantity } %>
-
-  <table>
+  <table class="table table-bordered">
     <thead>
       <tr>
         <th>Product</th>
         <th>Price</th>
         <th>Quantity</th>
-        <th>Line</th>
-        <th></th>
+        <th>Line Total</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <% @items.each do |it| %>
-        <tr data-product-id="<%= it.product.id %>">
-          <td><%= link_to it.product.name, product_path(it.product) %></td>
-          <td>$<%= '%.2f' % it.product.price %></td>
-          <td>
-            <div class="quantity-controls">
-              <button type="button" class="decrement">−</button>
-              <input type="text" class="quantity-input" value="<%= it.quantity %>" readonly size="2">
-              <button type="button" class="increment">+</button>
-            </div>
-          </td>
-          <td class="line-total">$<%= '%.2f' % (it.product.price * it.quantity) %></td>
-          <td><%= button_to "Remove", remove_cart_path(id: it.product.id), method: :delete %></td>
-        </tr>
+      <% @items.each do |item| %>
+        <%= render partial: "cart/item", locals: { item: item } %>
       <% end %>
     </tbody>
   </table>
 
-  <h3>Cart Summary</h3>
-  <p><strong>Subtotal:</strong> $<span id="cart-subtotal"><%= '%.2f' % subtotal %></span></p>
+  <% subtotal_cents = @items.sum { |i| (i[:product].price.to_f * 100).to_i * i[:quantity] } %>
+  <% tax_cents = (subtotal_cents * 0.05).to_i %> <!-- Example 5% tax -->
+  <p><strong>Subtotal:</strong> $<%= '%.2f' % (subtotal_cents.to_f / 100) %></p>
+  <p><strong>Tax:</strong> $<%= '%.2f' % (tax_cents.to_f / 100) %></p>
+  <p><strong>Total:</strong> $<%= '%.2f' % ((subtotal_cents + tax_cents).to_f / 100) %></p>
 
-  <div>
-    <label for="province-select">Province:</label>
-    <select id="province-select">
-      <option value="">Select Province</option>
-      <option value="ON">ON</option>
-      <option value="BC">BC</option>
-      <option value="AB">AB</option>
-      <option value="Other">Other</option>
-    </select>
-  </div>
-
-  <p><strong>Estimated Tax (<span id="tax-rate">5%</span>):</strong> $<span id="cart-tax"><%= '%.2f' % (subtotal * 0.05) %></span></p>
-  <p><strong>Estimated Total:</strong> $<span id="cart-total"><%= '%.2f' % (subtotal * 1.05) %></span></p>
-
-  <%= link_to "Proceed to Checkout", checkout_cart_path, class: "btn btn-primary" %>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const taxRates = { "ON": 0.13, "BC": 0.12, "AB": 0.05, "Other": 0.05 };
-
-      document.querySelectorAll(".quantity-controls").forEach(control => {
-        const input = control.querySelector(".quantity-input");
-        const row = control.closest("tr");
-        const price = parseFloat(row.querySelector("td:nth-child(2)").textContent.replace("$",""));
-
-        control.querySelector(".increment").addEventListener("click", () => {
-          let qty = parseInt(input.value) + 1;
-          input.value = qty;
-          updateLine(row, price, qty);
-          updateCartTotals();
-          updateServer(row.dataset.productId, qty);
-        });
-
-        control.querySelector(".decrement").addEventListener("click", () => {
-          let qty = parseInt(input.value);
-          if(qty > 1){
-            qty -= 1;
-            input.value = qty;
-            updateLine(row, price, qty);
-            updateCartTotals();
-            updateServer(row.dataset.productId, qty);
-          }
-        });
-      });
-
-      function updateLine(row, price, qty){
-        row.querySelector(".line-total").textContent = "$" + (price * qty).toFixed(2);
-      }
-
-      function updateCartTotals(){
-        let subtotal = 0;
-        document.querySelectorAll("tbody tr").forEach(row => {
-          subtotal += parseFloat(row.querySelector(".line-total").textContent.replace("$",""));
-        });
-        document.getElementById("cart-subtotal").textContent = subtotal.toFixed(2);
-
-        const province = document.getElementById("province-select").value || "Other";
-        const taxRate = taxRates[province];
-        document.getElementById("tax-rate").textContent = (taxRate*100).toFixed(0) + "%";
-        const tax = subtotal * taxRate;
-        document.getElementById("cart-tax").textContent = tax.toFixed(2);
-        document.getElementById("cart-total").textContent = (subtotal + tax).toFixed(2);
-      }
-
-      document.getElementById("province-select").addEventListener("change", updateCartTotals);
-
-      function updateServer(productId, qty){
-        fetch(`/cart/update/${productId}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content },
-          body: JSON.stringify({ quantity: qty })
-        });
-      }
-    });
-  </script>
+  <%= link_to "Proceed to Checkout", checkout_cart_path, class: "btn btn-success" %>
+  <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
 <% end %>

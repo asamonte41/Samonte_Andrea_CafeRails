@@ -1,6 +1,6 @@
-ActiveAdmin.register User do
-  # Permit parameters for assignment
-  permit_params :email, :full_name, :address, :city, :postal, :province_id, :password, :password_confirmation
+ActiveAdmin.register Customer do
+  # Allow these fields to be edited
+  permit_params :full_name, :email, :address, :city, :postal, :province_id
 
   index do
     selectable_column
@@ -11,30 +11,18 @@ ActiveAdmin.register User do
     column :city
     column :postal
     column :province
-    column :created_at
     actions
   end
 
-  filter :full_name
-  filter :email
-  filter :city
-  filter :province
-  filter :created_at
-
   form do |f|
-    f.semantic_errors *f.object.errors.keys
-
-    f.inputs "User Details" do
+    f.inputs "Customer Details" do
       f.input :full_name
       f.input :email
       f.input :address
       f.input :city
       f.input :postal
       f.input :province
-      f.input :password
-      f.input :password_confirmation
     end
-
     f.actions
   end
 

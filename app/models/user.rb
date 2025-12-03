@@ -8,7 +8,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   # Validations
-  validates :first_name, :last_name, :address, :city, :postal, presence: true
+  validates :full_name, :address, :city, :postal, presence: true
   validates :postal,
             format: {
               with: /\A[ABCEGHJKLMNPRSTVXY]\d[ABCEGHJKLMNPRSTVWXYZ] ?\d[ABCEGHJKLMNPRSTVWXYZ]\d\z/i,
@@ -19,10 +19,6 @@ class User < ApplicationRecord
   before_validation :normalize_postal_code
 
   # Helper methods
-  def full_name
-    "#{first_name} #{last_name}"
-  end
-
   def full_address
     "#{address}, #{city}, #{province&.name}, #{postal}"
   end
@@ -43,7 +39,7 @@ class User < ApplicationRecord
   # -------------------------
   # Allowlisted attributes for Ransack searches in ActiveAdmin
   def self.ransackable_attributes(auth_object = nil)
-    %w[id first_name last_name email province_id created_at updated_at]
+    %w[id full_name email province_id created_at updated_at]
   end
 
   # Allowlisted associations for Ransack

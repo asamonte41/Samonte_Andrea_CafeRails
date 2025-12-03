@@ -2,6 +2,43 @@
 <p>Order: <%= @order.id %></p>
 <p>Total: $<%= '%.2f' % (@order.total_cents.to_f / 100) %></p>
 
+<!-- --- Test mode payment --- -->
 <%= form_with url: create_payment_path(order_id: @order.id), method: :post, local: true do %>
   <%= submit_tag "Pay (test mode)" %>
 <% end %>
+
+<!-- --- Stripe Checkout --- -->
+<h2>Pay with Stripe</h2>
+<p>Total: $<%= @order.total_cents.to_f / 100 %></p>
+
+<button id="checkout-button">Pay with Stripe</button>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const stripeButton = document.getElementById("checkout-button");
+
+    stripeButton.addEventListener("click", function() {
+      fetch("/payments/create_checkout_session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({}) // can send extra info if needed
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.url) {
+          // Redirect to Stripe Checkout
+          window.location.href = data.url;
+        } else {
+          alert("Error creating checkout session");
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Payment failed. Try again.");
+      });
+    });
+  });
+</script>

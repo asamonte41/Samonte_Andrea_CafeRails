@@ -1,4 +1,5 @@
 class Customer < ApplicationRecord
   has_many :orders
-  validates :name, :email, presence: true
+  validates :full_name, :email, presence: true
+  belongs_to :province, optional: true
 end

@@ -1,0 +1,222 @@
+
+// Import Bootstrap
+@import "bootstrap";
+
+// ---------------- Color Palette ----------------
+$bg-main: #F9EFE6;       // soft cafe cream background
+$bg-section: #EFE3D8;    // slightly darker cream for cards/sections
+$text-dark: #3A2E28;     // rich coffee brown for headings/text
+$accent-pink: #E89EA1;   // warm pink for links/highlights
+$border-grey: #CAC9D0;   // subtle neutral borders
+
+// ---------------- Typography ----------------
+$body-font: 'Nunito', 'Helvetica', sans-serif;
+$heading-font: 'Playfair Display', serif;
+
+body {
+  background-color: $bg-main;
+  color: $text-dark;
+  font-family: $body-font;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: $heading-font;
+  color: $text-dark;
+  margin-bottom: 1rem;
+}
+
+// ---------------- Links ----------------
+a {
+  color: $accent-pink;
+  text-decoration: none;
+
+  &:hover {
+    color: darken($accent-pink, 10%);
+    text-decoration: underline;
+  }
+}
+
+// ---------------- Navbar ----------------
+.navbar {
+  background-color: $text-dark; // dark coffee brown navbar
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba($text-dark, 0.2);
+
+  .navbar-brand, .navbar-nav .nav-link {
+    color: $text-dark !important;
+    font-weight: 600;
+  }
+
+  .nav-link:hover {
+    color: $accent-pink !important;
+  }
+
+  .navbar-text {
+    color: $text-dark;
+  }
+}
+
+// ---------------- Buttons ----------------
+.btn-primary {
+  background-color: $text-dark;
+  border-color: $text-dark;
+  border-radius: 8px;
+  font-weight: 600;
+
+  &:hover {
+    background-color: lighten($text-dark, 10%);
+    border-color: lighten($text-dark, 10%);
+  }
+}
+
+.btn-secondary {
+  background-color: $accent-pink;
+  border-color: $accent-pink;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: darken($accent-pink, 5%);
+    border-color: darken($accent-pink, 5%);
+  }
+}
+
+// ---------------- Cards ----------------
+.card {
+  border: 1px solid $border-grey;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba($text-dark, 0.15);
+  background-color: $bg-section;
+  margin-bottom: 20px;
+
+  .card-title {
+    color: $text-dark;
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+
+  .card-text {
+    color: $text-dark;
+  }
+}
+
+// ---------------- Breadcrumbs ----------------
+.breadcrumb {
+  background: transparent;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  list-style: none;
+  border-radius: 8px;
+
+  li + li::before {
+    content: "•";
+    padding: 0 0.5rem;
+    color: $accent-pink;
+  }
+
+  a {
+    color: $accent-pink;
+
+    &:hover {
+      color: darken($accent-pink, 10%);
+    }
+  }
+}
+
+// ---------------- Flash messages ----------------
+.alert {
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+
+  &.alert-success {
+    background-color: lighten($accent-pink, 50%);
+    color: $text-dark;
+  }
+
+  &.alert-danger {
+    background-color: lighten(#f28c8c, 40%);
+    color: $text-dark;
+  }
+}
+
+// ---------------- Footer ----------------
+footer {
+  background-color: $text-dark;
+  color: $bg-main;
+  border-top: 1px solid $border-grey;
+  border-radius: 12px 12px 0 0;
+  padding: 2rem 0;
+  text-align: center;
+  font-family: $body-font;
+
+  a {
+    color: $accent-pink;
+
+    &:hover {
+      color: lighten($accent-pink, 10%);
+    }
+  }
+}
+
+// ---------------- Responsive tweaks ----------------
+@media (max-width: 768px) {
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+
+  .navbar-nav {
+    text-align: center;
+  }
+
+  .card {
+    margin-bottom: 15px;
+  }
+}
+
+/* MOBILE HIDES TABLE */
+.cart-desktop {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.cart-table {
+  display: none; /* hide mobile version on desktop */
+}
+
+/* Mobile-friendly layout */
+@media (max-width: 768px) {
+  .cart-desktop {
+    display: none; /* hide table */
+  }
+
+  .cart-table {
+    display: block;
+  }
+
+  .cart-item {
+    background: #fff;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .cart-item h5 {
+    margin-top: 0;
+  }
+
+  .quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+  }
+
+  .quantity-controls button {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+  }
+}

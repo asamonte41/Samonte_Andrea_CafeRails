@@ -1,121 +1,61 @@
-require "ostruct"
-
 class CartController < ApplicationController
   before_action :load_cart
 
-  # Show cart
+  # --- Show cart ---
   def index
-    @items = @cart.map do |pid, qty|
-      product = Product.find_by(id: pid)
-      next unless product
-      OpenStruct.new(product: product, quantity: qty)
-    end.compact
+    @items = cart_items
+    @subtotal_cents = @items.sum { |i| (i[:product].price.to_f * 100).to_i * i[:quantity] }
   end
 
-  # Add a product to cart
+  # --- Add item to cart ---
   def add
-    pid = params[:id].to_s
-    @cart[pid] = (@cart[pid] || 0) + 1
-    redirect_back fallback_location: cart_index_path, notice: "Added to cart"
+    product_id = params[:id].to_s
+    session[:cart] ||= {}
+    session[:cart][product_id] = (session[:cart][product_id] || 0) + 1
+    redirect_to cart_path, notice: "Added item to cart."
   end
 
-  # Update quantity
+  # --- Update quantity ---
   def update
-    pid = params[:id].to_s
-    qty = params[:quantity].to_i
-    if qty > 0
-      @cart[pid] = qty
+    product_id = params[:id].to_s
+    quantity = params[:quantity].to_i
+    if quantity > 0
+      session[:cart][product_id] = quantity
     else
-      @cart.delete(pid)
+      session[:cart].delete(product_id)
     end
-    redirect_to cart_index_path, notice: "Cart updated"
+    redirect_to cart_path, notice: "Cart updated."
   end
 
-  # Remove product
+  # --- Remove item ---
   def remove
-    @cart.delete(params[:id].to_s)
-    redirect_to cart_index_path, notice: "Removed from cart"
+    session[:cart].delete(params[:id].to_s)
+    redirect_to cart_path, notice: "Item removed."
   end
 
-  # Checkout form
-  def checkout
-    if @cart.empty?
-      redirect_to cart_index_path, alert: "Cart is empty"
-      return
-    end
-
-    @customer = Customer.new
-    @items = @cart.map do |pid, qty|
-      product = Product.find_by(id: pid)
-      OpenStruct.new(product: product, quantity: qty) if product
-    end.compact
-
-    @subtotal = @items.sum { |it| it.product.price * it.quantity }
-  end
-
-  # Place order and save order_items
-  def place_order
-    if @cart.empty?
-      redirect_to cart_index_path, alert: "Cart is empty"
-      return
-    end
-
-    # Create or find customer
-    @customer = Customer.find_or_create_by(email: params[:customer][:email]) do |c|
-      c.name = params[:customer][:name]
-      c.province = params[:customer][:province] # string value
-      c.address = params[:customer][:address]
-    end
-
-    # Ensure province_id is present
-    province = Province.find_by(code: @customer.province) # assumes Province has a 'code' field
-    province ||= Province.first # fallback to first province if none found
-
-    # Build order
-    order = @customer.orders.build(status: :new_order)
-    order.province_id = province.id # assign NOT NULL province_id
-
-    subtotal_cents = 0
-
-    @cart.each do |pid, qty|
-      product = Product.find_by(id: pid)
-      next unless product
-      price_cents = (product.price * 100).to_i
-      order.order_items.build(product: product, quantity: qty, price_cents: price_cents)
-      subtotal_cents += price_cents * qty
-    end
-
-    # Compute taxes
-    tax_rate = calculate_tax(province.code)
-    tax_cents = (subtotal_cents * tax_rate).to_i
-    total_cents = subtotal_cents + tax_cents
-
-    # Assign totals
-    order.subtotal_cents = subtotal_cents
-    order.total_cents = total_cents
-
-    if order.save
-      session[:cart] = {}
-      redirect_to order_path(order), notice: "Order successfully placed"
+  # --- Checkout redirect ---
+  def checkout_redirect
+    if @cart.blank?
+      redirect_to cart_path, alert: "Cart is empty."
     else
-      flash.now[:alert] = "Failed to place order"
-      render :checkout
+      redirect_to checkout_address_path
     end
   end
 
   private
 
+  # Load cart from session
   def load_cart
     session[:cart] ||= {}
     @cart = session[:cart]
   end
 
-  def calculate_tax(province_code)
-    case province_code
-    when "ON" then 0.13
-    when "BC" then 0.12
-    when "AB" then 0.05
-    else 0.05
-    end
+  # Map cart to products and quantities
+  def cart_items
+    @cart.map do |pid, qty|
+      product = Product.find_by(id: pid)
+      next unless product
+      { product: product, quantity: qty.to_i }
+    end.compact
   end
 end

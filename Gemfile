@@ -53,7 +53,12 @@ gem "kaminari"
 gem "ransack"
 
 # CSS Framework (opt but might help me? lol)
+
 gem "sassc-rails"
+
+gem 'sassc-rails'
+gem 'bootstrap', '~> 5.3.2'
+
 
 gem "faker"
 
@@ -63,6 +68,7 @@ gem "dotenv-rails", groups: [ :development, :test ]
 # Set up for heroku :P
 # gem 'pg', group: :production
 gem "sqlite3", group: [ :development, :test ]
+
 
 
 group :development, :test do
