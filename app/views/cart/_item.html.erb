@@ -1,14 +1,14 @@
 <tr>
-  <td><%= item.product.name %></td>
-  <td>$<%= '%.2f' % item.product.price %></td>
+  <td><%= item[:product].name %></td>
+  <td>$<%= '%.2f' % item[:product].price %></td>
   <td>
-    <%= form_with url: update_cart_path(item.product.id), method: :patch, local: true do |f| %>
-      <%= number_field_tag :quantity, item.quantity, min: 1, class: "form-control", style: "width:80px;" %>
+    <%= form_with url: update_cart_path(item[:product].id), method: :patch, local: true do %>
+      <%= number_field_tag :quantity, item[:quantity], min: 1, class: "form-control", style: "width:80px;" %>
       <%= submit_tag "Update", class: "btn btn-sm btn-secondary mt-1" %>
     <% end %>
   </td>
-  <td>$<%= '%.2f' % (item.product.price * item.quantity) %></td>
+  <td>$<%= '%.2f' % (item[:product].price * item[:quantity]) %></td>
   <td>
-    <%= button_to "Remove", remove_cart_path(item.product.id), method: :delete, class: "btn btn-sm btn-danger" %>
+    <%= link_to "Remove", remove_cart_path(item[:product].id), method: :delete, data: { confirm: "Remove this item?" }, class: "btn btn-sm btn-danger" %>
   </td>
 </tr>

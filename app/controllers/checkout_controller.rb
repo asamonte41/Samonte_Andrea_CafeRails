@@ -4,78 +4,77 @@ class CheckoutController < ApplicationController
 
   # --- Step 1: Address form ---
   def address
+    @customer = current_user || OpenStruct.new
     @provinces = Province.order(:name)
     @cart_items = load_cart_items
-
-    if current_user
-      # Use Customer-like struct for form defaults
-      @customer_data = OpenStruct.new(
-        full_name: current_user.full_name || current_user.email,
-        email: current_user.email,
-        address: current_user.address,
-        city: current_user.city,
-        postal: current_user.postal,
-        province_id: current_user.province_id
-      )
-    else
-      @customer_data = OpenStruct.new
-    end
   end
 
-  # --- Step 2: Save address to session ---
+  # --- Step 2: Save address to session and go to review ---
   def process_address
-    permitted = params.require(:address).permit(:full_name, :email, :address, :city, :postal, :province_id)
-    if permitted.values.all?(&:present?)
-      session[:checkout_address] = permitted.to_h
+    address_data = params.require(:address).permit(:full_name, :email, :address, :city, :postal, :province_id)
+
+    if address_data.values.all?(&:present?)
+      session[:checkout_address] = address_data.to_h
       redirect_to checkout_review_path
     else
       flash.now[:alert] = "Please fill in all required fields."
       @provinces = Province.order(:name)
+      @cart_items = load_cart_items
       render :address
     end
   end
 
   # --- Step 3: Review cart and totals ---
   def review
-    @order_data = session[:checkout_address] || {}
     @cart_items = load_cart_items
+    @order_data = session[:checkout_address] || {}
+
     @subtotal_cents = @cart_items.sum { |i| (i[:product].price.to_f * 100).to_i * i[:quantity] }
 
     if @order_data["province_id"].present?
       @province = Province.find_by(id: @order_data["province_id"])
       if @province
-        gst_rate = @province.gst_cents.to_f / 100.0
-        pst_rate = @province.pst_cents.to_f / 100.0
-        hst_rate = @province.hst_cents.to_f / 100.0
+        gst_rate = @province.gst_cents.to_f / 100
+        pst_rate = @province.pst_cents.to_f / 100
+        hst_rate = @province.hst_cents.to_f / 100
 
         @gst_cents = (@subtotal_cents * gst_rate).round
         @pst_cents = (@subtotal_cents * pst_rate).round
         @hst_cents = (@subtotal_cents * hst_rate).round
         @tax_cents = @gst_cents + @pst_cents + @hst_cents
         @total_cents = @subtotal_cents + @tax_cents
-      else
-        @gst_cents = @pst_cents = @hst_cents = @tax_cents = @total_cents = 0
       end
     end
+
+    # fallback
+    @gst_cents ||= @pst_cents ||= @hst_cents ||= @tax_cents ||= @total_cents ||= 0
   end
 
-  # --- Step 4: Create order + order_items ---
+  # --- Step 4: Create order ---
   def create
-    address_data = session[:checkout_address] || {}
-    province = Province.find_by(id: address_data["province_id"])
+    @cart_items = load_cart_items
+    address_data = {
+      full_name: params[:full_name],
+      email: params[:email],
+      address: params[:address],
+      city: params[:city],
+      postal: params[:postal],
+      province_id: params[:province_id]
+    }
 
+    # validate required fields
+    if address_data.values.any?(&:blank?)
+      flash[:alert] = "All fields are required."
+      redirect_to checkout_address_path and return
+    end
+
+    province = Province.find_by(id: address_data[:province_id])
     unless province
-      redirect_to checkout_address_path, alert: "Please select a valid province."
-      return
+      flash[:alert] = "Please select a valid province."
+      redirect_to checkout_address_path and return
     end
 
-    cart_items = load_cart_items
-    if cart_items.empty?
-      redirect_to products_path, alert: "Your cart is empty."
-      return
-    end
-
-    subtotal_cents = cart_items.sum { |ci| (ci[:product].price.to_f * 100).to_i * ci[:quantity] }
+    subtotal_cents = @cart_items.sum { |ci| (ci[:product].price.to_f * 100).to_i * ci[:quantity] }
     gst_cents = (subtotal_cents * province.gst_cents.to_f / 100.0).round
     pst_cents = (subtotal_cents * province.pst_cents.to_f / 100.0).round
     hst_cents = (subtotal_cents * province.hst_cents.to_f / 100.0).round
@@ -83,29 +82,27 @@ class CheckoutController < ApplicationController
     total_cents = subtotal_cents + tax_cents
 
     ActiveRecord::Base.transaction do
-      # Find or create Customer
       customer = if current_user
-                   current_user.update!(
-                     full_name: address_data["full_name"],
-                     email: address_data["email"],
-                     address: address_data["address"],
-                     city: address_data["city"],
-                     postal: address_data["postal"],
+                   current_user.update(
+                     full_name: address_data[:full_name],
+                     email: address_data[:email],
+                     address: address_data[:address],
+                     city: address_data[:city],
+                     postal: address_data[:postal],
                      province: province
                    )
                    current_user
       else
                    Customer.create!(
-                     full_name: address_data["full_name"],
-                     email: address_data["email"],
-                     address: address_data["address"],
-                     city: address_data["city"],
-                     postal: address_data["postal"],
+                     full_name: address_data[:full_name],
+                     email: address_data[:email],
+                     address: address_data[:address],
+                     city: address_data[:city],
+                     postal: address_data[:postal],
                      province: province
                    )
       end
 
-      # Create Order
       order = customer.orders.create!(
         subtotal_cents: subtotal_cents,
         gst_cents: gst_cents,
@@ -117,8 +114,7 @@ class CheckoutController < ApplicationController
         payment_method: params[:payment_method] || "stripe"
       )
 
-      # Create OrderItems
-      cart_items.each do |ci|
+      @cart_items.each do |ci|
         unit_cents = (ci[:product].price.to_f * 100).to_i
         line_total_cents = unit_cents * ci[:quantity]
 
@@ -131,7 +127,6 @@ class CheckoutController < ApplicationController
         )
       end
 
-      # Clear cart and save order id for payment
       session[:checkout_order_id] = order.id
       session[:cart] = {}
     end
@@ -142,7 +137,7 @@ class CheckoutController < ApplicationController
   private
 
   def ensure_cart_present
-    redirect_to products_path, alert: "Your cart is empty" if (session[:cart] || {}).empty?
+    redirect_to products_path, alert: "Your cart is empty" if session[:cart].blank?
   end
 
   def load_cart_items

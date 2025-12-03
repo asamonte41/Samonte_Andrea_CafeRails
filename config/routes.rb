@@ -7,14 +7,14 @@ Rails.application.routes.draw do
   get "/pages/:slug", to: "pages#show", as: "page"
 
   # --- Cart ---
-  get    "cart",                to: "cart#index",  as: :cart
-  post   "cart/add/:id",        to: "cart#add",    as: :add_cart
-  patch  "cart/update/:id",     to: "cart#update", as: :update_cart
-  delete "cart/remove/:id",     to: "cart#remove", as: :remove_cart
+  get    "cart",            to: "cart#index",  as: :cart
+  post   "cart/add/:id",    to: "cart#add",    as: :add_cart
+  patch  "cart/update/:id", to: "cart#update", as: :update_cart
+  delete "cart/remove/:id", to: "cart#remove", as: :remove_cart
 
   # Cart checkout redirects
-  get  "cart/checkout",      to: "cart#checkout",        as: :checkout_cart
-  post "cart/place_order",   to: "cart#place_order",     as: :place_order_cart
+  get  "cart/checkout",    to: "cart#checkout",      as: :checkout_cart
+  post "cart/place_order", to: "cart#place_order",   as: :place_order_cart
 
   # --- Checkout flow (address → review → create) ---
   get  "checkout/address",         to: "checkout#address",         as: :checkout_address

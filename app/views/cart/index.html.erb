@@ -1,29 +1,32 @@
-<h1>Your Shopping Cart</h1>
+<h1>Your Cart</h1>
 
 <% if @items.empty? %>
   <p>Your cart is empty.</p>
   <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
 <% else %>
-  <table class="table">
+  <table class="table table-bordered">
     <thead>
       <tr>
         <th>Product</th>
         <th>Price</th>
         <th>Quantity</th>
-        <th>Total</th>
+        <th>Line Total</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <%= render partial: "cart/item", collection: @items, as: :item %>
+      <% @items.each do |item| %>
+        <%= render partial: "cart/item", locals: { item: item } %>
+      <% end %>
     </tbody>
   </table>
 
-  <% subtotal_cents = @items.sum { |i| (i.product.price.to_f * 100).to_i * i.quantity } %>
+  <% subtotal_cents = @items.sum { |i| (i[:product].price.to_f * 100).to_i * i[:quantity] } %>
   <% tax_cents = (subtotal_cents * 0.05).to_i %> <!-- Example 5% tax -->
   <p><strong>Subtotal:</strong> $<%= '%.2f' % (subtotal_cents.to_f / 100) %></p>
   <p><strong>Tax:</strong> $<%= '%.2f' % (tax_cents.to_f / 100) %></p>
   <p><strong>Total:</strong> $<%= '%.2f' % ((subtotal_cents + tax_cents).to_f / 100) %></p>
 
-  <%= link_to "Proceed to Checkout", checkout_address_path, class: "btn btn-success" %>
+  <%= link_to "Proceed to Checkout", checkout_cart_path, class: "btn btn-success" %>
+  <%= link_to "Continue Shopping", products_path, class: "btn btn-primary" %>
 <% end %>

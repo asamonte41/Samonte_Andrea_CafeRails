@@ -1,61 +1,77 @@
 <h1>Checkout</h1>
 
-<%= form_with model: @customer,
-              url: place_order_cart_index_path,
-              method: :post,
-              local: true do |f| %>
-
+<%= form_with url: checkout_create_path, method: :post, local: true do |f| %>
   <% if flash[:alert] %>
     <div class="alert alert-danger"><%= flash[:alert] %></div>
   <% end %>
 
-  <h3>Customer Information</h3>
-
   <div class="mb-3">
-    <%= f.label :full_name %>
-    <%= f.text_field :full_name, class: "form-control" %>
+    <%= label_tag "full_name", "Full Name", class: "form-label" %>
+    <%= text_field_tag "full_name", @customer&.full_name || "", class: "form-control", required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :email %>
-    <%= f.email_field :email, class: "form-control" %>
+    <%= label_tag "email", "Email", class: "form-label" %>
+    <%= email_field_tag "email", @customer&.email || "", class: "form-control", required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :address %>
-    <%= f.text_field :address, class: "form-control" %>
+    <%= label_tag "address", "Address", class: "form-label" %>
+    <%= text_field_tag "address", @customer&.address || "", class: "form-control", required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :city %>
-    <%= f.text_field :city, class: "form-control" %>
+    <%= label_tag "city", "City", class: "form-label" %>
+    <%= text_field_tag "city", @customer&.city || "", class: "form-control", required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :postal %>
-    <%= f.text_field :postal, class: "form-control" %>
+    <%= label_tag "postal", "Postal Code", class: "form-label" %>
+    <%= text_field_tag "postal", @customer&.postal || "", class: "form-control", required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :province_code, "Province" %>
-    <%= f.select :province_code,
-                Province.all.map { |p| [p.name, p.code] },
-                {},
-                class: "form-control" %>
+    <%= label_tag "province_id", "Province", class: "form-label" %>
+    <%= select_tag "province_id",
+          options_from_collection_for_select(Province.order(:name), :id, :name, @customer&.province_id),
+          prompt: "Select a Province",
+          class: "form-select",
+          required: true %>
   </div>
 
   <hr>
 
   <h3>Order Summary</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Line Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% subtotal_cents = 0 %>
+      <% @cart_items.each do |item| %>
+        <% product = item[:product] %>
+        <% quantity = item[:quantity] %>
+        <% line_total_cents = (product.price.to_f * 100).to_i * quantity %>
+        <% subtotal_cents += line_total_cents %>
+        <tr>
+          <td><%= product.name %></td>
+          <td>$<%= '%.2f' % product.price %></td>
+          <td><%= quantity %></td>
+          <td>$<%= '%.2f' % (line_total_cents.to_f / 100) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 
-  <ul>
-    <% @items.each do |item| %>
-      <li><%= item.product.name %> (x<%= item.quantity %>) – <%= number_to_currency(item.product.price * item.quantity) %></li>
-    <% end %>
-  </ul>
+  <% tax_cents = (subtotal_cents * 0.05).to_i %> <!-- Example 5% tax -->
+  <p><strong>Subtotal:</strong> $<%= '%.2f' % (subtotal_cents.to_f / 100) %></p>
+  <p><strong>Tax:</strong> $<%= '%.2f' % (tax_cents.to_f / 100) %></p>
+  <p><strong>Total:</strong> $<%= '%.2f' % ((subtotal_cents + tax_cents).to_f / 100) %></p>
 
-  <p><strong>Subtotal:</strong> <%= number_to_currency(@subtotal) %></p>
-
-  <%= f.submit "Place Order", class: "btn btn-success" %>
-
+  <%= f.submit "Place Order", class: "btn btn-primary" %>
 <% end %>
