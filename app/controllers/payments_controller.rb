@@ -1,30 +1,70 @@
 class PaymentsController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: [ :webhook ]
+
+  # --- Payment page ---
   def new
-    @order = Order.find(params[:order_id])
+    @order = Order.find(params[:order_id] || session[:checkout_order_id])
   end
 
-  def create
-    order = Order.find(params[:order_id])
-
-    # create a payment intent
-    intent = Stripe::PaymentIntent.create(
+  # --- Inline card (test mode) ---
+  def create_payment_intent
+    order = Order.find(params[:order_id] || session[:checkout_order_id])
+    payment_intent = Stripe::PaymentIntent.create(
       amount: order.total_cents,
-      currency: "cad",
+      currency: order.currency || "cad",
       metadata: { order_id: order.id }
     )
 
-    # Temporary: instantly mark the order as paid (project requirement 3.3.1 without webhooks)
-    order.update!(status: :paid, payment_id: intent.id)
-
-
-    redirect_to order_path(order), notice: "Payment recorded (test mode)."
-  rescue Stripe::StripeError => e
-    redirect_to new_payment_path(order_id: order.id), alert: "Payment failed: #{e.message}"
+    render json: { client_secret: payment_intent.client_secret }
   end
 
-  # If you want to implement webhooks later set up endpoint that updates order status on actual confirmation.
+  # --- Stripe hosted checkout ---
+  def create_checkout_session
+    order = Order.find(params[:order_id] || session[:checkout_order_id])
+    session_obj = Stripe::Checkout::Session.create(
+      payment_method_types: [ "card" ],
+      mode: "payment",
+      line_items: order.order_items.map do |item|
+        {
+          price_data: {
+            currency: order.currency || "cad",
+            product_data: { name: item.product_name },
+            unit_amount: item.unit_price_cents
+          },
+          quantity: item.quantity
+        }
+      end,
+      success_url: checkout_success_url + "?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: checkout_cancel_url,
+      client_reference_id: order.id
+    )
+
+    render json: { url: session_obj.url }
+  end
+
+  # --- Webhook endpoint ---
   def webhook
-    # Implement only if you want real webhook handling; I won't auto-wire it here.
+    payload = request.body.read
+    sig_header = request.env["HTTP_STRIPE_SIGNATURE"]
+    endpoint_secret = Rails.application.credentials.dig(:stripe, :webhook_secret)
+
+    begin
+      event = Stripe::Webhook.construct_event(payload, sig_header, endpoint_secret)
+    rescue JSON::ParserError, Stripe::SignatureVerificationError
+      head 400 and return
+    end
+
+    case event.type
+    when "payment_intent.succeeded"
+      pi = event.data.object
+      order = Order.find_by(id: pi.metadata.order_id)
+      order&.mark_paid!(processor: "stripe", payment_id: pi.id)
+    when "checkout.session.completed"
+      session = event.data.object
+      order = Order.find_by(id: session.client_reference_id)
+      order&.mark_paid!(processor: "stripe", payment_id: session.payment_intent)
+    end
+
     head :ok
   end
 end

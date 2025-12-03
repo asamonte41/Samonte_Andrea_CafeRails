@@ -15,9 +15,10 @@ Rails.application.routes.draw do
   delete "cart/remove/:id", to: "cart#remove", as: :remove_cart
 
   # --- Checkout ---
-  get "checkout/address", to: "checkout#address", as: :checkout_address
-  post "checkout/summary", to: "checkout#summary", as: :checkout_summary
-  post "checkout/create", to: "checkout#create", as: :checkout_create
+  get  "checkout/address", to: "checkout#address", as: :checkout_address
+  post "checkout/address", to: "checkout#process_address" # save to session
+  get  "checkout/review",  to: "checkout#review", as: :checkout_review
+  post "checkout/create",  to: "checkout#create", as: :checkout_create
 
   # Optional legacy checkout
   get "cart/checkout", to: "cart#checkout", as: :checkout_cart
@@ -27,13 +28,23 @@ Rails.application.routes.draw do
   get "dashboard", to: "dashboard#index", as: :dashboard
 
   # --- Orders ---
-  resources :orders, only: [ :index, :show ]
+  resources :orders, only: [ :index, :show ] do
+    member do
+      get :invoice
+    end
+  end
 
   # --- Payments ---
-  get "payments/new", to: "payments#new", as: :new_payment
-  post "payments/create", to: "payments#create", as: :create_payment
+  get  "payments/new",     to: "payments#new",     as: :new_payment
+  post "payments/create",  to: "payments#create",  as: :create_payment
   post "payments/webhook", to: "payments#webhook", as: :payments_webhook
-  post "/stripe/webhook", to: "stripe#webhook"
+  post "/stripe/webhook",  to: "stripe#webhook"
+  post "create-payment-intent", to: "payments#create_payment_intent"
+
+  # --- Card Inline Payments ---
+  post "payments/create_payment_intent", to: "payments#create_payment_intent"
+  post "payments/create_checkout_session", to: "payments#create_checkout_session"
+  post "payments/webhook", to: "payments#webhook"
 
   # --- Products ---
   resources :products, only: [ :index, :show ] do
@@ -45,20 +56,11 @@ Rails.application.routes.draw do
     end
   end
 
-  # --- Invoice ---
-
-  resources :orders do
-    member do
-      get :invoice
-    end
-  end
-
   # --- Admin (ActiveAdmin) ---
   # Place AFTER Devise for :users to prevent conflicts
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
 
   # --- Root ---
-  # Must be at the very end
   root to: "products#index"
 end

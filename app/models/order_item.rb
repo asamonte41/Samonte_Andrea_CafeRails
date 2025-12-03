@@ -1,6 +1,11 @@
 class OrderItem < ApplicationRecord
   belongs_to :order
-  belongs_to :product
+  belongs_to :product, optional: true
+
+  # ---- Validations ----
+  validates :unit_price_cents, :product_name, :quantity, :line_total_cents, presence: true
+
+  # ---- Price Helpers ----
 
   # Converts stored cents to decimal price
   def price
@@ -12,12 +17,14 @@ class OrderItem < ApplicationRecord
     (price_cents * quantity).to_f / 100.0
   end
 
-  # Ransack allowlist for associations
+  # ---- Ransack Allowlist ----
+
+  # Associations
   def self.ransackable_associations(auth_object = nil)
     [ "order", "product" ]
   end
 
-  # Ransack allowlist for attributes
+  # Attributes
   def self.ransackable_attributes(auth_object = nil)
     [
       "id",
