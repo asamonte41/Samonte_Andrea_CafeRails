@@ -40,6 +40,9 @@ Rails.application.routes.draw do
   post "payments/webhook", to: "payments#webhook", as: :payments_webhook
   post "/stripe/webhook",  to: "stripe#webhook"
   post "create-payment-intent", to: "payments#create_payment_intent"
+  get "payments/selection", to: "payments#selection", as: :payment_selection
+
+
 
   # --- Card Inline Payments ---
   post "payments/create_payment_intent", to: "payments#create_payment_intent"

@@ -24,14 +24,9 @@
   <!-- Address Fields -->
   <h5 class="mt-4">Address Information</h5>
 
-  <div class="mb-3">
-  <%= f.label :first_name %>
-  <%= f.text_field :first_name, class: "form-control" %>
-  </div>
-
-  <div class="mb-3">
-  <%= f.label :last_name %>
-  <%= f.text_field :last_name, class: "form-control" %>
+   <div class="mb-3">
+    <%= f.label :full_name %><br />
+    <%= f.text_field :full_name, autofocus: true, autocomplete: "name" %>
   </div>
 
   <div class="mb-3">

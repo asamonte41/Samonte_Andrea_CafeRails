@@ -1,14 +1,20 @@
 class PaymentsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [ :webhook ]
 
-  # --- Payment page ---
+  # --- Payment selection page ---
+  def selection
+    @order = Order.find(params[:order_id] || session[:checkout_order_id])
+  end
+
+  # --- Payment page (inline card) ---
   def new
     @order = Order.find(params[:order_id] || session[:checkout_order_id])
   end
 
-  # --- Inline card (test mode) ---
+  # --- Create Stripe PaymentIntent for inline card ---
   def create_payment_intent
     order = Order.find(params[:order_id] || session[:checkout_order_id])
+
     payment_intent = Stripe::PaymentIntent.create(
       amount: order.total_cents,
       currency: order.currency || "cad",
@@ -18,9 +24,10 @@ class PaymentsController < ApplicationController
     render json: { client_secret: payment_intent.client_secret }
   end
 
-  # --- Stripe hosted checkout ---
+  # --- Stripe hosted checkout session ---
   def create_checkout_session
     order = Order.find(params[:order_id] || session[:checkout_order_id])
+
     session_obj = Stripe::Checkout::Session.create(
       payment_method_types: [ "card" ],
       mode: "payment",
@@ -42,7 +49,7 @@ class PaymentsController < ApplicationController
     render json: { url: session_obj.url }
   end
 
-  # --- Webhook endpoint ---
+  # --- Webhook endpoint for Stripe ---
   def webhook
     payload = request.body.read
     sig_header = request.env["HTTP_STRIPE_SIGNATURE"]

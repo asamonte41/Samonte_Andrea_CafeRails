@@ -2,24 +2,24 @@ class CheckoutController < ApplicationController
   before_action :ensure_cart_present
   before_action :authenticate_user!, only: [ :create ] # require login for saving orders
 
-  # --- Step 1: Address form ---
-  def address
-    @user = current_user || User.new
-    @provinces = Province.order(:name)
-    @cart_items = load_cart_items
+    # --- Step 1: Address form ---
+    def address
+      @user = current_user || User.new
+      @provinces = Province.order(:name)
+      @cart_items = load_cart_items
 
     if current_user
       @customer = OpenStruct.new(
-        full_name: current_user.full_name || current_user.email,
+        full_name: current_user.name || current_user.email,
         address: current_user.address,
         city: current_user.city,
         postal: current_user.postal,
         province: current_user.province
       )
     else
-      @customer = OpenStruct.new
+    @customer = OpenStruct.new
     end
-  end
+    end
 
   # --- Step 2: Save address to session and review ---
   def process_address

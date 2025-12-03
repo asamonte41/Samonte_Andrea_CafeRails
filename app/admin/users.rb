@@ -1,8 +1,8 @@
 ActiveAdmin.register User do
-  permit_params :name, :email, :address, :province_id
+  permit_params :full_name, :email, :address, :province_id
 
   # FILTERS
-  filter :name
+  filter :full_name
   filter :email
   filter :province
   filter :created_at
@@ -11,7 +11,7 @@ ActiveAdmin.register User do
   index do
     selectable_column
     id_column
-    column :name
+    column :full_name
     column :email
     column :address
     column("Province") { |u| u.province&.name }
@@ -32,7 +32,7 @@ ActiveAdmin.register User do
   show do
     attributes_table do
       row :id
-      row :name
+      row :full_name
       row :email
       row :address
       row("Province") { |u| u.province&.name }
@@ -54,7 +54,7 @@ ActiveAdmin.register User do
   # FORM FOR EDITING USER
   form do |f|
     f.inputs "User Details" do
-      f.input :name
+      f.input :full_name
       f.input :email
       f.input :address
       f.input :province
