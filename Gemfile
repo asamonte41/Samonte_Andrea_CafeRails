@@ -39,30 +39,30 @@ gem "thruster", require: false
 
 
 # Authentication & Admin Dashboard (For 1.1 and 1.2)
-gem 'devise'
-gem 'activeadmin', '~> 3.4'
+gem "devise"
+gem "activeadmin", "~> 3.4"
 gem "stripe"
 
 # Image Upload (For 1.3, 5.2)
-gem 'image_processing', '~> 1.2'
+gem "image_processing", "~> 1.2"
 
 # Pagination (Required for 2.5)
-gem 'kaminari'
+gem "kaminari"
 
 # Search (2.6)
-gem 'ransack'
+gem "ransack"
 
 # CSS Framework (opt but might help me? lol)
-gem 'sassc-rails'
+gem "sassc-rails"
 
-gem 'faker'
+gem "faker"
 
 # env variable for LOCAL dev. This is for part 3
-gem "dotenv-rails", groups: [:development, :test]
+gem "dotenv-rails", groups: [ :development, :test ]
 
 # Set up for heroku :P
-#gem 'pg', group: :production
-gem 'sqlite3', group: [:development, :test]
+# gem 'pg', group: :production
+gem "sqlite3", group: [ :development, :test ]
 
 
 group :development, :test do
@@ -88,4 +88,10 @@ group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
   gem "capybara"
   gem "selenium-webdriver"
+end
+
+
+group :development do
+  gem "rubocop", require: false
+  gem "rubocop-rails", require: false
 end

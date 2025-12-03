@@ -487,6 +487,8 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.1.1)
   ransack
+  rubocop
+  rubocop-rails
   rubocop-rails-omakase
   sassc-rails
   selenium-webdriver
