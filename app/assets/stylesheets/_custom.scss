@@ -1,130 +1,176 @@
+
 // Import Bootstrap
 @import "bootstrap";
 
-// Custom variables for cafe vibes
-$primary: #6f4e37;   // coffee brown
-$secondary: #d9c1a5; // cream
-$light-bg: #fff8f0;
-$dark-text: #3a2e2a;
-$link-color: #a0522d;
+// ---------------- Color Palette ----------------
+$bg-main: #F9EFE6;       // soft cafe cream background
+$bg-section: #EFE3D8;    // slightly darker cream for cards/sections
+$text-dark: #3A2E28;     // rich coffee brown for headings/text
+$accent-pink: #E89EA1;   // warm pink for links/highlights
+$border-grey: #CAC9D0;   // subtle neutral borders
 
-// Body & typography
+// ---------------- Typography ----------------
+$body-font: 'Nunito', 'Helvetica', sans-serif;
+$heading-font: 'Playfair Display', serif;
+
 body {
-  background-color: $light-bg;
-  color: $dark-text;
-  font-family: 'Georgia', serif;
+  background-color: $bg-main;
+  color: $text-dark;
+  font-family: $body-font;
   line-height: 1.6;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Playfair Display', serif;
-  color: $primary;
+  font-family: $heading-font;
+  color: $text-dark;
   margin-bottom: 1rem;
 }
 
-// Links
+// ---------------- Links ----------------
 a {
-  color: $link-color;
+  color: $accent-pink;
   text-decoration: none;
 
   &:hover {
-    color: darken($link-color, 10%);
+    color: darken($accent-pink, 10%);
     text-decoration: underline;
   }
 }
 
-// Navbar
+// ---------------- Navbar ----------------
 .navbar {
-  background-color: $primary;
+  background-color: $text-dark; // dark coffee brown navbar
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba($text-dark, 0.2);
 
   .navbar-brand, .navbar-nav .nav-link {
-    color: $light-bg !important;
-    font-weight: bold;
+    color: $text-dark !important;
+    font-weight: 600;
   }
 
   .nav-link:hover {
-    color: $secondary !important;
+    color: $accent-pink !important;
+  }
+
+  .navbar-text {
+    color: $text-dark;
   }
 }
 
-// Buttons
+// ---------------- Buttons ----------------
 .btn-primary {
-  background-color: $primary;
-  border-color: $primary;
+  background-color: $text-dark;
+  border-color: $text-dark;
+  border-radius: 8px;
+  font-weight: 600;
 
   &:hover {
-    background-color: darken($primary, 10%);
-    border-color: darken($primary, 10%);
+    background-color: lighten($text-dark, 10%);
+    border-color: lighten($text-dark, 10%);
   }
 }
 
 .btn-secondary {
-  background-color: $secondary;
-  border-color: $secondary;
+  background-color: $accent-pink;
+  border-color: $accent-pink;
+  border-radius: 8px;
 
   &:hover {
-    background-color: darken($secondary, 10%);
-    border-color: darken($secondary, 10%);
+    background-color: darken($accent-pink, 5%);
+    border-color: darken($accent-pink, 5%);
   }
 }
 
-// Cards (for products, orders, etc.)
+// ---------------- Cards ----------------
 .card {
-  border: 1px solid lighten($primary, 30%);
-  border-radius: 10px;
-  box-shadow: 0 3px 6px rgba($dark-text, 0.1);
+  border: 1px solid $border-grey;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba($text-dark, 0.15);
+  background-color: $bg-section;
+  margin-bottom: 20px;
 
   .card-title {
-    color: $primary;
-    font-weight: bold;
+    color: $text-dark;
+    font-weight: 600;
+    font-size: 1.2rem;
   }
 
   .card-text {
-    color: $dark-text;
+    color: $text-dark;
   }
 }
 
-// Breadcrumbs
+// ---------------- Breadcrumbs ----------------
 .breadcrumb {
   background: transparent;
   padding: 0.75rem 1rem;
   margin-bottom: 1rem;
   list-style: none;
-  border-radius: 0.25rem;
+  border-radius: 8px;
 
   li + li::before {
-    content: ">";
+    content: "•";
     padding: 0 0.5rem;
-    color: $primary;
+    color: $accent-pink;
   }
 
   a {
-    color: $link-color;
+    color: $accent-pink;
 
     &:hover {
-      color: darken($link-color, 10%);
+      color: darken($accent-pink, 10%);
     }
   }
 }
 
-// Footer
+// ---------------- Flash messages ----------------
+.alert {
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+
+  &.alert-success {
+    background-color: lighten($accent-pink, 50%);
+    color: $text-dark;
+  }
+
+  &.alert-danger {
+    background-color: lighten(#f28c8c, 40%);
+    color: $text-dark;
+  }
+}
+
+// ---------------- Footer ----------------
 footer {
-  background-color: $primary;
-  color: $light-bg;
+  background-color: $text-dark;
+  color: $bg-main;
+  border-top: 1px solid $border-grey;
+  border-radius: 12px 12px 0 0;
   padding: 2rem 0;
   text-align: center;
+  font-family: $body-font;
 
   a {
-    color: $light-bg;
+    color: $accent-pink;
 
     &:hover {
-      color: lighten($secondary, 10%);
+      color: lighten($accent-pink, 10%);
     }
   }
 }
 
-// Responsive tweaks
+// ---------------- Responsive tweaks ----------------
 @media (max-width: 768px) {
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.75rem; }
+  h1 { font-size: 1.8rem; }
+  h2 { font-size: 1.5rem; }
+
+  .navbar-nav {
+    text-align: center;
+  }
+
+  .card {
+    margin-bottom: 15px;
+  }
 }

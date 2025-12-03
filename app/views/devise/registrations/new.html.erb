@@ -25,6 +25,16 @@
   <h5 class="mt-4">Address Information</h5>
 
   <div class="mb-3">
+  <%= f.label :first_name %>
+  <%= f.text_field :first_name, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+  <%= f.label :last_name %>
+  <%= f.text_field :last_name, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
     <%= f.label :address, class: "form-label" %>
     <%= f.text_field :address, class: "form-control" %>
   </div>

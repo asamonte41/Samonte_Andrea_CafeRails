@@ -4,3 +4,4 @@
 //= link controllers/hello_controller.js
 //= link controllers/index.js
 //= link application.scss
+//= link application.css
