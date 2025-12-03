@@ -1,53 +1,61 @@
 <h1>Checkout</h1>
 
-<%= form_with url: place_order_cart_path, method: :post do %>
+<%= form_with model: @customer,
+              url: place_order_cart_index_path,
+              method: :post,
+              local: true do |f| %>
+
+  <% if flash[:alert] %>
+    <div class="alert alert-danger"><%= flash[:alert] %></div>
+  <% end %>
+
   <h3>Customer Information</h3>
 
   <div class="mb-3">
-    <%= label_tag "customer[name]", "Full Name" %>
-    <%= text_field_tag "customer[name]", "", class: "form-control", required: true %>
+    <%= f.label :full_name %>
+    <%= f.text_field :full_name, class: "form-control" %>
   </div>
 
   <div class="mb-3">
-    <%= label_tag "customer[email]", "Email" %>
-    <%= email_field_tag "customer[email]", "", class: "form-control", required: true %>
+    <%= f.label :email %>
+    <%= f.email_field :email, class: "form-control" %>
   </div>
 
   <div class="mb-3">
-    <%= label_tag "customer[province]", "Province" %>
-    <%= select_tag "customer[province]",
-          options_for_select([ "ON", "BC", "AB", "Other" ]),
-          class: "form-control", required: true %>
+    <%= f.label :address %>
+    <%= f.text_field :address, class: "form-control" %>
   </div>
 
   <div class="mb-3">
-    <%= label_tag "customer[address]", "Address (optional)" %>
-    <%= text_field_tag "customer[address]", "", class: "form-control" %>
+    <%= f.label :city %>
+    <%= f.text_field :city, class: "form-control" %>
   </div>
+
+  <div class="mb-3">
+    <%= f.label :postal %>
+    <%= f.text_field :postal, class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :province_code, "Province" %>
+    <%= f.select :province_code,
+                Province.all.map { |p| [p.name, p.code] },
+                {},
+                class: "form-control" %>
+  </div>
+
+  <hr>
 
   <h3>Order Summary</h3>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Price</th>
-        <th>Quantity</th>
-        <th>Line Total</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @items.each do |it| %>
-        <tr>
-          <td><%= it.product.name %></td>
-          <td>$<%= '%.2f' % it.product.price %></td>
-          <td><%= it.quantity %></td>
-          <td>$<%= '%.2f' % (it.product.price * it.quantity) %></td>
-        </tr>
-      <% end %>
-    </tbody>
-  </table>
 
-  <p><strong>Subtotal:</strong> $<%= '%.2f' % @subtotal %></p>
+  <ul>
+    <% @items.each do |item| %>
+      <li><%= item.product.name %> (x<%= item.quantity %>) – <%= number_to_currency(item.product.price * item.quantity) %></li>
+    <% end %>
+  </ul>
 
-  <%= submit_tag "Place Order", class: "btn btn-primary" %>
+  <p><strong>Subtotal:</strong> <%= number_to_currency(@subtotal) %></p>
+
+  <%= f.submit "Place Order", class: "btn btn-success" %>
+
 <% end %>

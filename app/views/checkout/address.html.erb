@@ -1,49 +1,53 @@
 <h1>Checkout — Shipping & Billing Address</h1>
 
-<%= form_with url: checkout_review_path, method: :post, local: true do |f| %>
-
+<%= form_with url: checkout_process_address_path, method: :post, local: true do |f| %>
   <div class="mb-3">
-    <%= f.label :full_name, "Full Name", class: "form-label" %>
-    <%= f.text_field :full_name,
-          value: session[:checkout_address]&.dig("full_name") || current_user&.name,
-          class: "form-control",
-          required: true %>
+    <%= label_tag "address[full_name]", "Full Name", class: "form-label" %>
+    <%= text_field_tag "address[full_name]",
+        current_user&.full_name || session.dig(:checkout_address, "full_name") || "",
+        class: "form-control",
+        required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :address, "Street Address", class: "form-label" %>
-    <%= f.text_field :address,
-          value: session[:checkout_address]&.dig("address") || current_user&.address,
-          class: "form-control",
-          required: true %>
+    <%= label_tag "address[email]", "Email", class: "form-label" %>
+    <%= email_field_tag "address[email]",
+        current_user&.email || session.dig(:checkout_address, "email") || "",
+        class: "form-control",
+        required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :city, "City", class: "form-label" %>
-    <%= f.text_field :city,
-          value: session[:checkout_address]&.dig("city") || current_user&.city,
-          class: "form-control",
-          required: true %>
+    <%= label_tag "address[address]", "Address", class: "form-label" %>
+    <%= text_field_tag "address[address]",
+        current_user&.address || session.dig(:checkout_address, "address") || "",
+        class: "form-control",
+        required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :postal, "Postal Code", class: "form-label" %>
-    <%= f.text_field :postal,
-          value: session[:checkout_address]&.dig("postal") || current_user&.postal,
-          class: "form-control",
-          required: true %>
+    <%= label_tag "address[city]", "City", class: "form-label" %>
+    <%= text_field_tag "address[city]",
+        current_user&.city || session.dig(:checkout_address, "city") || "",
+        class: "form-control",
+        required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.label :province_id, "Province", class: "form-label" %>
-    <%= f.collection_select :province_id, @provinces, :id, :name,
-          { include_blank: "Select Province" },
-          { class: "form-select", required: true,
-            selected: session[:checkout_address]&.dig("province_id") || current_user&.province_id } %>
+    <%= label_tag "address[postal]", "Postal Code", class: "form-label" %>
+    <%= text_field_tag "address[postal]",
+        current_user&.postal || session.dig(:checkout_address, "postal") || "",
+        class: "form-control",
+        required: true %>
   </div>
 
   <div class="mb-3">
-    <%= f.submit "Continue to Review", class: "btn btn-primary" %>
+    <%= label_tag "address[province_id]", "Province", class: "form-label" %>
+    <%= select_tag "address[province_id]",
+        options_from_collection_for_select(@provinces, "id", "name", session.dig(:checkout_address, "province_id") || current_user&.province_id),
+        class: "form-select",
+        required: true %>
   </div>
 
+  <%= submit_tag "Continue to Review", class: "btn btn-primary" %>
 <% end %>

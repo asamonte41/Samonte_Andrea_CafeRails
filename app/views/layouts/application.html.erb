@@ -39,7 +39,7 @@
             <li class="nav-item"><%= link_to "Contact", page_path("contact"), class: "nav-link" %></li>
             <li class="nav-item"><%= link_to "Products", products_path, class: "nav-link" %></li>
             <li class="nav-item">
-              <%= link_to "Cart (#{session[:cart]&.values&.sum || 0})", cart_index_path, class: "nav-link" %>
+              <%= link_to "Cart (#{session[:cart]&.values&.sum || 0})", cart_path, class: "nav-link" %>
             </li>
             <li class="nav-item"><%= link_to "Checkout", checkout_address_path, class: "nav-link" %></li>
           </ul>
