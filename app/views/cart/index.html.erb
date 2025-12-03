@@ -4,9 +4,11 @@
   <p>Your cart is empty.</p>
   <%= link_to "Continue shopping", products_path %>
 <% else %>
+
   <% subtotal = @items.sum { |it| it.product.price * it.quantity } %>
 
-  <table>
+  <!-- DESKTOP TABLE -->
+  <table class="cart-desktop">
     <thead>
       <tr>
         <th>Product</th>
@@ -21,6 +23,7 @@
         <tr data-product-id="<%= it.product.id %>">
           <td><%= link_to it.product.name, product_path(it.product) %></td>
           <td>$<%= '%.2f' % it.product.price %></td>
+
           <td>
             <div class="quantity-controls">
               <button type="button" class="decrement">−</button>
@@ -28,12 +31,36 @@
               <button type="button" class="increment">+</button>
             </div>
           </td>
+
           <td class="line-total">$<%= '%.2f' % (it.product.price * it.quantity) %></td>
+
           <td><%= button_to "Remove", remove_cart_path(id: it.product.id), method: :delete %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
+
+
+  <!-- MOBILE VERSION -->
+  <div class="cart-table">
+    <% @items.each do |it| %>
+      <div class="cart-item" data-product-id="<%= it.product.id %>">
+        <h5><%= it.product.name %></h5>
+        <p>Price: $<%= '%.2f' % it.product.price %></p>
+
+        <div class="quantity-controls">
+          <button type="button" class="decrement">−</button>
+          <input type="text" class="quantity-input" value="<%= it.quantity %>" readonly size="2">
+          <button type="button" class="increment">+</button>
+        </div>
+
+        <p class="line-total-mobile">Line Total: $<%= '%.2f' % (it.product.price * it.quantity) %></p>
+
+        <%= button_to "Remove", remove_cart_path(id: it.product.id), method: :delete, class: "btn btn-danger btn-sm" %>
+      </div>
+    <% end %>
+  </div>
+
 
   <h3>Cart Summary</h3>
   <p><strong>Subtotal:</strong> $<span id="cart-subtotal"><%= '%.2f' % subtotal %></span></p>
@@ -54,14 +81,17 @@
 
   <%= link_to "Proceed to Checkout", checkout_cart_path, class: "btn btn-primary" %>
 
+  <!-- JS (unchanged) -->
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const taxRates = { "ON": 0.13, "BC": 0.12, "AB": 0.05, "Other": 0.05 };
 
+      // Works for both desktop + mobile controls
       document.querySelectorAll(".quantity-controls").forEach(control => {
         const input = control.querySelector(".quantity-input");
-        const row = control.closest("tr");
-        const price = parseFloat(row.querySelector("td:nth-child(2)").textContent.replace("$",""));
+        const row = control.closest("[data-product-id]");
+        const priceElement = row.querySelector("td:nth-child(2)") || row.querySelector("p:nth-child(2)");
+        const price = parseFloat(priceElement.textContent.replace(/[^0-9.]/g,""));
 
         control.querySelector(".increment").addEventListener("click", () => {
           let qty = parseInt(input.value) + 1;
@@ -84,19 +114,28 @@
       });
 
       function updateLine(row, price, qty){
-        row.querySelector(".line-total").textContent = "$" + (price * qty).toFixed(2);
+        const lineTotal = (price * qty).toFixed(2);
+
+        let desktopLine = row.querySelector(".line-total");
+        let mobileLine = row.querySelector(".line-total-mobile");
+
+        if (desktopLine) desktopLine.textContent = "$" + lineTotal;
+        if (mobileLine) mobileLine.textContent = "Line Total: $" + lineTotal;
       }
 
       function updateCartTotals(){
         let subtotal = 0;
-        document.querySelectorAll("tbody tr").forEach(row => {
-          subtotal += parseFloat(row.querySelector(".line-total").textContent.replace("$",""));
+
+        document.querySelectorAll(".line-total, .line-total-mobile").forEach(line => {
+          subtotal += parseFloat(line.textContent.replace(/[^0-9.]/g,""));
         });
+
         document.getElementById("cart-subtotal").textContent = subtotal.toFixed(2);
 
         const province = document.getElementById("province-select").value || "Other";
         const taxRate = taxRates[province];
         document.getElementById("tax-rate").textContent = (taxRate*100).toFixed(0) + "%";
+
         const tax = subtotal * taxRate;
         document.getElementById("cart-tax").textContent = tax.toFixed(2);
         document.getElementById("cart-total").textContent = (subtotal + tax).toFixed(2);
@@ -113,4 +152,5 @@
       }
     });
   </script>
+
 <% end %>
