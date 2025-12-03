@@ -56,8 +56,8 @@ gem "ransack"
 
 gem "sassc-rails"
 
-gem 'sassc-rails'
-gem 'bootstrap', '~> 5.3.2'
+gem "sassc-rails"
+gem "bootstrap", "~> 5.3.2"
 
 
 gem "faker"
